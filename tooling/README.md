@@ -70,3 +70,5 @@ colima start
 docker ps 
 ```
 
+## Other
+Want more? There is also [more opinionated tooling](./opinionated-tooling.md) too!
