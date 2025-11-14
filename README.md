@@ -4,14 +4,13 @@ Welcome to the ReOps meta repository. This repository serves as the central hub 
 
 ## Why This Repository Exists
 
-This repository serves several key purposes:
-
 - **Single Entry Point**: New developers can start here for onboarding and getting an overview of the ReOps ecosystem
 - **Cross-Cutting Issues**: Houses epics and tasks that span multiple applications or don't belong to any specific repository
 - **Shared Resources**: Central location for reusable GitHub Actions workflows and DevOps patterns
 - **Active Maintenance Overview**: Clear view of what code we currently care about and actively maintain
 
-**Project Board**: [ReOps GitHub Project Board](https://github.com/orgs/navikt/projects/186/views/1) - tracks all tasks across all ReOps repositories and applications.
+> [!IMPORTANT]
+> The [ReOps GitHub Project Board](https://github.com/orgs/navikt/projects/186/views/1) is where all issues for all ReOps development tasks should be listed.
 
 ## Active Applications
 
