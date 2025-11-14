@@ -41,6 +41,11 @@ on:
           - dev
           - prod
 
+permissions:
+  packages: write      # For building and pushing Docker images
+  contents: write      # For creating deployment tags (prod only)
+  id-token: write      # For OIDC authentication with NAIS/Google Cloud
+
 jobs:
   deploy:
     uses: navikt/reops-meta/.github/workflows/deploy.yaml@main
@@ -56,6 +61,11 @@ jobs:
 The reusable workflow uses sensible defaults, but you can customize these inputs in the `with:` section if needed:
 
 ```yaml
+permissions:
+  packages: write      # For building and pushing Docker images
+  contents: write      # For creating deployment tags (prod only)
+  id-token: write      # For OIDC authentication with NAIS/Google Cloud
+
 jobs:
   deploy:
     uses: navikt/reops-meta/.github/workflows/deploy.yaml@main
