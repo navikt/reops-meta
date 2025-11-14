@@ -55,9 +55,18 @@ nais app get <app-name>
 # View logs
 nais logs <app-name>
 ```
-**Documentation:** https://doc.nais.io/
 
 ## [Colima](https://github.com/abiosoft/colima)
 
-For local development and testing containerized applications.
+For local development and testing containerized applications. 
+
+>[!WARNING]
+> We are no longer recommended to use the Docker Desktop application, as it's only free to use for individuals.
+
+**Usage:**
+```bash
+colima start
+# now you can run your docker commands
+docker ps 
+```
 

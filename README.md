@@ -10,11 +10,11 @@ Welcome to the ReOps meta repository. This repository serves as the central hub 
 - **Active Maintenance Overview**: Clear view of what code we currently care about and actively maintain
 
 > [!IMPORTANT]
-> The [ReOps GitHub Project Board](https://github.com/orgs/navikt/projects/186/views/1) is where all issues for all ReOps development tasks should be listed.
+> This [ReOps GitHub Project Board](https://github.com/orgs/navikt/projects/186/views/1) is where _all_ issues for ReOps development tasks should be listed.
 
 ## Active Applications
 
-Our [currently running and maintained applications on NAIS](https://console.nav.cloud.nais.io/team/team-researchops/applications).
+The NAIS Console has the de-facto overview of our [currently running and maintained applications](https://console.nav.cloud.nais.io/team/team-researchops/applications), ReOps has more repositories than it has currently running apps, this list helps reduce our focus.
 
 ## Creating a New Application
 
@@ -50,8 +50,6 @@ jobs:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
       NAIS_MANAGEMENT_PROJECT_ID: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
 ```
-
-**That's it!** This minimal file gives you the full deployment workflow with sensible defaults.
 
 #### Customization
 
