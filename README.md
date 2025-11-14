@@ -106,15 +106,6 @@ jobs:
           git push origin "$TAG_NAME"
 ```
 
-#### Customization Checklist
-
-After copying the template above, review and customize these items:
-
-1. **Branch name**: Update `branches: - "main"` if your repository uses `master` or another branch
-2. **Build steps**: Add any build steps needed for your application (Node.js, Go, Java, etc.)
-3. **Dev cluster**: Change `CLUSTER: "prod-gcp"` in `deploy-dev` job if your dev environment uses a different cluster
-4. **NAIS config paths**: Update `.nais/nais-dev.yaml` and `.nais/nais-prod.yaml` if your configs are in different locations
-
 ### 2. Set up digestabot (if your app uses chainguard images)
 
 ## Recommended Tools
