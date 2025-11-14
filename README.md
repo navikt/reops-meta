@@ -51,24 +51,8 @@ jobs:
       id-token: write
     steps:
       - uses: "actions/checkout@v4"
-      
+
       # TODO: Add any build steps here (e.g., Node.js setup, dependency installation, compilation)
-      # Example for Node.js projects:
-      # - uses: "actions/setup-node@v4"
-      #   with:
-      #     node-version: 22
-      #     registry-url: "https://npm.pkg.github.com"
-      #     cache: "yarn"
-      # - name: "Install dependencies"
-      #   run: "yarn install"
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
-      # - name: "Build application"
-      #   run: "yarn build"
-      # - name: "Remove devDependencies (prevents Go CVEs from esbuild in SBOM)"
-      #   run: "yarn workspaces focus --production"
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
 
       - name: "Build and push"
         uses: nais/docker-build-push@v0
@@ -93,8 +77,8 @@ jobs:
       - name: "Deploy to Dev"
         uses: "nais/deploy/actions/deploy@v2"
         env:
-          CLUSTER: "prod-gcp"  # TODO: Change to "dev-gcp" if your dev environment uses dev-gcp cluster
-          RESOURCE: .nais/nais-dev.yaml  # TODO: Adjust path if your NAIS config is in a different location
+          CLUSTER: "dev-gcp"
+          RESOURCE: .nais/nais-dev.yaml
           VAR: image=${{ needs.build.outputs.image }},version=${{ github.sha }}
 
   deploy-prod:
@@ -110,7 +94,7 @@ jobs:
         uses: "nais/deploy/actions/deploy@v2"
         env:
           CLUSTER: "prod-gcp"
-          RESOURCE: .nais/nais-prod.yaml  # TODO: Adjust path if your NAIS config is in a different location
+          RESOURCE: .nais/nais-prod.yaml
           VAR: image=${{ needs.build.outputs.image }},version=${{ github.sha }}
       - name: "Create deployment tag"
         if: success()
