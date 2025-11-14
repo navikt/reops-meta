@@ -56,7 +56,7 @@ nais app get <app-name>
 nais logs <app-name>
 ```
 
-## [Colima](https://github.com/abiosoft/colima)
+## [Colima](https://github.com/abiosoft/colima) + [Docker client + docker-compose](./docker-and-docker-compose.md)
 
 For local development and testing containerized applications. 
 
