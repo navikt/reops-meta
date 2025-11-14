@@ -18,9 +18,9 @@ get_kube_info() {
 RPROMPT='$(get_kube_info)'
 ```
 
-Do you use Tmux and want it in the tmux status bar instead? ofc its possible! 🤩
+Do you use [Tmux](https://github.com/tmux/tmux/wiki) and want it in the tmux status bar instead? ofc its possible! 🤩
 
-`tmux/kube_status.sh`
+`kube_status.sh`
 ```bash
 #!/usr/bin/env bash
 ctx=$(kubectl config current-context 2>/dev/null)
@@ -33,5 +33,5 @@ fi
 
 now you can reference it in your `.tmux.conf`:
 ```conf
-	set -g status-right "#($HOME/Repos/configs/tmux/kube_status.sh)#[bold] %Y-%m-%d %H:%M"
+set -g status-right "#(path/to/my/tmux/kube_status.sh)#[bold] %Y-%m-%d %H:%M"
 ```
