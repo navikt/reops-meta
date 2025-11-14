@@ -17,3 +17,21 @@ get_kube_info() {
 }
 RPROMPT='$(get_kube_info)'
 ```
+
+Do you use Tmux and want it in the tmux status bar instead? ofc its possible! 🤩
+
+`tmux/kube_status.sh`
+```bash
+#!/usr/bin/env bash
+ctx=$(kubectl config current-context 2>/dev/null)
+ns=$(kubectl config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)
+[ -z "$ns" ] && ns="default"
+if [ -n "$ctx" ]; then
+  printf "#[fg=yellow](%s/%s)#[fg=default]" "$ctx" "$ns"
+fi
+```
+
+now you can reference it in your `.tmux.conf`:
+```conf
+	set -g status-right "#($HOME/Repos/configs/tmux/kube_status.sh)#[bold] %Y-%m-%d %H:%M"
+```
