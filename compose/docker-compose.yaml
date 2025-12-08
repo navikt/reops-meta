@@ -41,7 +41,7 @@ services:
       KAFKA_NODE_ID: "2"
       KAFKA_PROCESS_ROLES: broker
 
-      # 👇 Two listeners: one internal, one external
+      # Two listeners: one internal, one external
       KAFKA_LISTENERS: PLAINTEXT://:9092,EXTERNAL://:9094
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-1:9092,EXTERNAL://localhost:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
@@ -54,8 +54,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
-
-      # Limit broker JVM heap
       KAFKA_HEAP_OPTS: "-Xms512m -Xmx1024m"
     healthcheck:
       test: [ "CMD", "/opt/kafka/bin/kafka-topics.sh", "--list", "--bootstrap-server", "localhost:9092" ]
