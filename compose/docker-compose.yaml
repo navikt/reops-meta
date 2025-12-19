@@ -5,7 +5,7 @@ services:
     container_name: kafka-controller-1
     restart: unless-stopped
     init: true
-    stop_grace_period: 1s
+    stop_grace_period: 20s
     environment:
       KAFKA_CLUSTER_ID: "01916ec2-824f-77b4-a3c2-c1ccfd480449"
       KAFKA_NODE_ID: "1"
@@ -15,17 +15,17 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@controller-1:9093"
       # Limit controller JVM heap
-      KAFKA_HEAP_OPTS: "-Xms256m -Xmx512m"
+      KAFKA_HEAP_OPTS: "-Xms256m -Xmx384m"
     healthcheck:
-      test: [ "CMD", "/opt/kafka/bin/kafka-cluster.sh", "list-endpoints", "--bootstrap-controller", "localhost:9093" ]
-      interval: 60s
-      timeout: 60s
+      test: [ "CMD", "/opt/kafka/bin/kafka-cluster.sh", "list-endpoints", "--bootstrap-controller", "controller-1:9093" ]
+      interval: 30s
+      timeout: 10s
       retries: 10
-      start_period: 5s
+      start_period: 40s
     volumes:
       - ./kafka/controller-1:/tmp/kafka-logs
     cpus: 0.5
-    mem_limit: 512m
+    mem_limit: 768m
 
   # --- Kafka broker ---
   broker-1:
@@ -33,7 +33,7 @@ services:
     container_name: kafka-broker-1
     restart: unless-stopped
     init: true
-    stop_grace_period: 1s
+    stop_grace_period: 20s
     depends_on:
       - controller-1
     environment:
@@ -53,21 +53,25 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
-      KAFKA_HEAP_OPTS: "-Xms512m -Xmx1024m"
+      KAFKA_HEAP_OPTS: "-Xms1g -Xmx1g"
+
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_GROUP_MIN_SESSION_TIMEOUT_MS: "6000"
+      KAFKA_GROUP_MAX_SESSION_TIMEOUT_MS: "300000"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "3000"
     healthcheck:
-      test: [ "CMD", "/opt/kafka/bin/kafka-topics.sh", "--list", "--bootstrap-server", "localhost:9092" ]
-      interval: 60s
-      timeout: 60s
+      test: [ "CMD", "/opt/kafka/bin/kafka-topics.sh", "--list", "--bootstrap-server", "broker-1:9092" ]
+      interval: 30s
+      timeout: 10s
       retries: 10
-      start_period: 15s
+      start_period: 60s
     volumes:
       - ./kafka/broker-1:/tmp/kafka-logs
     ports:
       - "9092:9092"   # internal / debugging
       - "9094:9094"   # external for your app
     cpus: 0.5
-    mem_limit: 512m
+    mem_limit: 2g
 
   # --- Karapace Schema Registry ---
   karapace-schema-registry:
@@ -240,6 +244,7 @@ services:
       APP_SECRET: secret
       # Limit Node.js memory a bit
       NODE_OPTIONS: "--max_old_space_size=256"
+      DISABLE_BOT_CHECK: "1"
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:3000/api/heartbeat || exit 1"]
       interval: 60s
