@@ -4,7 +4,7 @@ Handy tools and setup for working with ReOps applications.
 
 ## Bruno
 
-We have a [Bruno](https://www.usebruno.com/) collection to gather all our API requests (for testing and development). We put _all_ ReOps requests into this single collection (to make it simple, keeping it up to date etc...).
+We have a [Bruno](https://www.usebruno.com/) collection to gather all our API requests (for testing and development). We put _all_ ReOps requests into this single collection (to make it simple, keeping it up to date etc...). Each application gets its own subdirectory.
 
 The collection is here at `./researchops-bruno/`, simply import this folder as a collection.
 
