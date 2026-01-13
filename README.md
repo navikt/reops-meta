@@ -144,6 +144,6 @@ jobs:
 
 ```
 
-## Recommended Tools
+## Recommended Tooling
 
 For optimal development experience with ReOps applications, see our [Tooling Guide](./tooling/README.md).
