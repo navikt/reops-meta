@@ -1,0 +1,31 @@
+meta {
+  name: LOCAL simple
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8082/api/send
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "type": "event",
+    "payload": {
+      "website": "1dbfe4e9-bf8b-45d9-9305-928f22200bc0",
+      "hostname": "felgen.ansatt.nav.no",
+      "screen": "420x69",
+      "language": "en-GB",
+      "title": "tittelgreier",
+      "url": "felgen.ansatt.nav.no/greier",
+      "referrer": "12345678910"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

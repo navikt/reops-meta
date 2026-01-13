@@ -1,0 +1,28 @@
+meta {
+  name: LOCAL test
+  type: http
+  seq: 1
+}
+
+post {
+  url: localhost:11434/api/chat
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "model": "smollm2:360m",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hello, how are you?"
+        }
+      ]
+    }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

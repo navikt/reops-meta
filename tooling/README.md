@@ -2,6 +2,12 @@
 
 Handy tools and setup for working with ReOps applications.
 
+## Bruno
+
+We have a [https://www.usebruno.com/](bruno) collection to gather all our API requests (for testing and development). We put _all_ ReOps requests into this single collection (to make it simple, keeping it up to date etc...).
+
+The collection is here at `./researchops-bruno/`, simply import this folder as a collection.
+
 ## Kubernetes Tools
 
 ### [kubectl](https://kubernetes.io/docs/reference/kubectl/)
