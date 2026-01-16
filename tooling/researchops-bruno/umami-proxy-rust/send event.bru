@@ -1,11 +1,11 @@
 meta {
-  name: DEV too long field (advanced)
+  name: send event
   type: http
-  seq: 2
+  seq: 5
 }
 
 post {
-  url: https://umami-dev.nav.no:443/api/send
+  url: http://localhost:6191/api/send
   body: json
   auth: inherit
 }
@@ -25,21 +25,10 @@ body:json {
       "language":"en-GB",
       "title":"tittelgreier",
       "url": "felgen.ansatt.nav.no/greier",
-      "referrer":"nettside",
-      "my-long-field": "{{longField}}",
-      "my-nested-long-containing-field": {
-        "my-long-field": "{{longField}}",
-        "fine-field": "this field is fine",
-        "my-arr-of-things": ["thing1", "{{longField}}", "thing2"]
-      }
+      "referrer":"nettside"
     }
   }
   
-}
-
-script:pre-request {
-  const longString = 'a'.repeat(501);
-  bru.setVar('longField', longString)
 }
 
 settings {

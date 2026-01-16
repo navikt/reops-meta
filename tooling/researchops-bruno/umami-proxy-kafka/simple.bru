@@ -1,5 +1,5 @@
 meta {
-  name: LOCAL simple
+  name: simple
   type: http
   seq: 1
 }
@@ -8,6 +8,10 @@ post {
   url: http://localhost:8082/api/send
   body: json
   auth: inherit
+}
+
+headers {
+  X-Exclude-Filters: {"PROXY-FNR": "ikke-et-fnr", "PROXY-FILEPATH": "ikke-filsti"}
 }
 
 body:json {

@@ -1,0 +1,61 @@
+meta {
+  name: DEV exclude PII filter
+  type: http
+  seq: 4
+}
+
+post {
+  url: https://umami-dev.nav.no/api/send
+  body: json
+  auth: inherit
+}
+
+headers {
+  Origin: en-nettside
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
+  X-Exclude-Filters: {"PROXY-FNR": "ikke-et-fnr", "PROXY-FILEPATH": "ikke-filsti"}
+}
+
+body:json {
+  {
+    "type": "event",
+    "payload": {
+      "website": "2a29e23b-cbb0-4375-98f1-3427955a9fca",
+      "hostname": "felgen.ansatt.nav.no",
+      "screen": "420x69",
+      "language": "en-GB",
+      "title": "tittelgreier",
+      "url": "https://arbeidsplassen.nav.no/stillinger/stilling/fabaa3cc-90e7-4c00-88aa-ab8d2f9831e8",
+      "referrer": "nettside.no/SOGo/so/johndoe@example.com/Mail/view",
+      "data": {
+        "valid1": "side.nav.no/kul-soknad/skjema",
+        "valid2": "side.nav.no/kul-soknad",
+        "søkeord": "trombone2",
+        "destinasjon": "/",
+        "komponent": "search-input",
+        "mitt-fnr": "12345678910",
+        "ikke-filsti": "/a/generic/valid/path",
+        "ikke-et-fnr": "0123456789",
+        "kake": {
+          "bake": {
+            "katt": [{"thing1": true}, {"thing2": 42}, null],
+            "hest": {
+              "verdi": 123
+            },
+            "null": "{{longField}}"
+          }
+        }
+      }
+    }
+  }
+}
+
+script:pre-request {
+  const longString = 'a'.repeat(501);
+  bru.setVar('longField', longString)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
