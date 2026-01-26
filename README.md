@@ -147,3 +147,13 @@ jobs:
 ## Recommended Tooling
 
 For optimal development experience with ReOps applications, see our [Tooling Guide](./tooling/README.md).
+
+## Team researchops applications
+- [Umami](https://github.com/navikt/umami)
+- [Umami-start](https://github.com/navikt/umami-start)
+- [Umami-proxy](https://github.com/navikt/umami-proxy)
+- [Reops-ping](https://github.com/navikt/reops-ping)
+- [Reops-Ollama](https://github.com/navikt/reops-ollama)
+- [Reops-event-proxy](https://github.com/navikt/reops-event-proxy)
+- [Reops-umami-consumer](https://github.com/navikt/reops-umami-consumer)
+- More to come...
