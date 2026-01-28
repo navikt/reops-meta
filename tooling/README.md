@@ -89,6 +89,11 @@ gcloud auth application-default login
 cloud-sql-proxy CONNECTION_NAME
 ```
 
+>[!TIP]
+> You can find the `CONNECTION_NAME` in the Cloud SQL Web interface (google cloud console), under the "Overview" tab for the instance.
+> <img width="927" height="269" alt="image" src="https://github.com/user-attachments/assets/4ab32746-d93c-4aba-98ee-740ed55bb392" />
+
+
 example:
 ```bash
 cloud-sql-proxy team-researchops-prod-01d6:europe-north1:test-restoration-id
