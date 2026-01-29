@@ -2,7 +2,9 @@
 
 For all those things you feel are handy, but bespoke. Maybe it's not for everyone... unless?
 
-## utility zsh/bash functions to help search for and generate copy-pastable docker image strings (including the sha256 hash), from both the nav docker chainguard repository, and the open chainguard public repository
+## utility zsh/bash functions 
+
+Search for and generate copy-pastable docker image strings (including the sha256 hash), from both the nav docker chainguard repository, and the open chainguard public repository
 
 <img width="1639" height="366" alt="image" src="https://github.com/user-attachments/assets/c71b87aa-e4ed-48c3-9727-4811ede38e6c" />
 
