@@ -76,5 +76,30 @@ colima start
 docker ps 
 ```
 
+## [cloud-sql-proxy](https://github.com/GoogleCloudPlatform/cloud-sql-proxy)
+
+To let you connect to any Cloud SQL instance fairly easily as if it was running on your machine as `localhost:5432`
+
+first install the tool [as instructed in the github readme](https://github.com/GoogleCloudPlatform/cloud-sql-proxy/blob/main/README.md#installation)
+
+Then you can run the following:
+
+```bash
+gcloud auth application-default login
+cloud-sql-proxy CONNECTION_NAME
+```
+
+>[!TIP]
+> You can find the `CONNECTION_NAME` in the Cloud SQL Web interface (google cloud console), under the "Overview" tab for the instance.
+> <img width="927" height="269" alt="image" src="https://github.com/user-attachments/assets/4ab32746-d93c-4aba-98ee-740ed55bb392" />
+
+
+example:
+```bash
+cloud-sql-proxy team-researchops-prod-01d6:europe-north1:test-restoration-id
+```
+
+Now the proxy script should be left running (it continually outputs some connection information as applications on your local machine try to connect to the proxied port). Connect to your instance as `localhost:5432` using whatever DB client tool you like (eg. beekeeper-studio is pretty nice).
+
 ## Other
 Want more? There is also [more opinionated tooling](./opinionated-tooling.md) too!
