@@ -1,0 +1,97 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0" version="29.3.6">
+  <diagram name="Page-1" id="-LZuyhwWjC7IySBShkAR">
+    <mxGraphModel dx="726" dy="606" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="200" width="270" x="400" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-7" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="GCP-Dev&lt;br&gt;(K8s cluster)" vertex="1">
+          <mxGeometry height="30" width="80" x="410" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="200" width="270" x="110" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Prod&lt;div&gt;(IaC /Terraform soon)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="100" x="140" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&quot;Pre-Prod&quot;&lt;div&gt;(heterdev i dag)&lt;/div&gt;&lt;div&gt;(to be 🚚 to GCP-Dev)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="90" x="270" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" value="Dev&lt;div&gt;(nye via IaC / Terraform)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="80" x="560" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="GCP-Prod&lt;br&gt;(K8s cluster)" vertex="1">
+          <mxGeometry height="30" width="70" x="120" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="felgen" vertex="1">
+          <mxGeometry height="40" width="60" x="374" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-9" edge="1" parent="1" source="fMYGkXqjc0jF194gX4QJ-8" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="fMYGkXqjc0jF194gX4QJ-2" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="460" as="sourcePoint" />
+            <mxPoint x="440" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-10" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="All trafikk&lt;div&gt;(hele Nav)&lt;/div&gt;&lt;div&gt;Prod&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="87.5" x="120" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-11" edge="1" parent="1" source="fMYGkXqjc0jF194gX4QJ-10" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="fMYGkXqjc0jF194gX4QJ-1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="280" y="460" as="sourcePoint" />
+            <mxPoint x="215" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-12" edge="1" parent="1" source="fMYGkXqjc0jF194gX4QJ-8" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;" target="fMYGkXqjc0jF194gX4QJ-3" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="380" y="420" as="sourcePoint" />
+            <mxPoint x="430" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-15" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;retention: evig tid?&lt;/div&gt;&lt;div style=&quot;&quot;&gt;ekte data: ja&lt;/div&gt;&lt;div style=&quot;&quot;&gt;SLA: nja (gcp sin)&lt;br&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="191.5" x="128.5" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-16" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=left;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;retention: veldig kort&lt;/div&gt;&lt;div style=&quot;&quot;&gt;ekte data: ish? (felgen er ekte)&lt;/div&gt;&lt;div style=&quot;&quot;&gt;SLA: nja (gcp sin)&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;Vi kan brekke felgen == null stress&lt;br&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="233" x="380" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-20" edge="1" parent="1" source="fMYGkXqjc0jF194gX4QJ-2" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;dashed=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="fMYGkXqjc0jF194gX4QJ-21" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="380" y="450" as="sourcePoint" />
+            <mxPoint x="410" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-21" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" value="Pre-prod&lt;br&gt;&lt;div&gt;(TBD)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="80" x="440" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-22" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="All trafikk&lt;div&gt;(hele Nav)&lt;/div&gt;&lt;div&gt;Dev (team test / demo sider)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="87.5" x="210" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-23" edge="1" parent="1" source="fMYGkXqjc0jF194gX4QJ-22" style="endArrow=classic;html=1;rounded=0;exitX=0.372;exitY=0.047;exitDx=0;exitDy=0;entryX=0.554;entryY=1.007;entryDx=0;entryDy=0;entryPerimeter=0;exitPerimeter=0;" target="fMYGkXqjc0jF194gX4QJ-1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="232.13" y="490" as="sourcePoint" />
+            <mxPoint x="258.13" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-24" edge="1" parent="1" source="fMYGkXqjc0jF194gX4QJ-22" style="endArrow=classic;html=1;rounded=0;dashed=1;dashPattern=8 8;" target="fMYGkXqjc0jF194gX4QJ-21" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="250" y="510" as="sourcePoint" />
+            <mxPoint x="431" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-25" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 61, 54));&quot;&gt;Pre-prod &amp;amp; Dev can be merged if we are skilled developers (use trunk based)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="245" x="412.5" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-26" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=8;" value="umami.nav.no/api/send" vertex="1">
+          <mxGeometry height="30" width="60" x="150" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-27" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=8;" value="analytics.nav.no/api/send" vertex="1">
+          <mxGeometry height="30" width="60" x="434" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-29" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=8;" value="analytics&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;.nav.dev&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;.no/api/send&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="130" x="535" y="350" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
