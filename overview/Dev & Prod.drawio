@@ -88,7 +88,7 @@
         <mxCell id="fMYGkXqjc0jF194gX4QJ-27" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=8;" value="analytics.nav.no/api/send" vertex="1">
           <mxGeometry height="30" width="60" x="434" y="340" as="geometry" />
         </mxCell>
-        <mxCell id="fMYGkXqjc0jF194gX4QJ-29" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=8;" value="analytics&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;.nav.dev&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;.no/api/send&lt;/span&gt;" vertex="1">
+        <mxCell id="fMYGkXqjc0jF194gX4QJ-29" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=8;" value="analytics&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;.dev.nav&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;.no/api/send&lt;/span&gt;" vertex="1">
           <mxGeometry height="30" width="130" x="535" y="350" as="geometry" />
         </mxCell>
       </root>
