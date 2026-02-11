@@ -1,0 +1,20 @@
+meta {
+  name: projects - get all
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://localhost:8086/api/projects
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJraWQiOiJpc3N1ZWlzc3VlIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJzdGFydC11bWFtaSIsIm5iZiI6MTc3MDcyNTIwMSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2lzc3VlaXNzdWUiLCJuYW1lIjoic3RhcnQtdW1hbWkiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzdGFydC11bWFtaUBuYXYubm8iLCJvaWQiOiJzdGFydC11bWFtaUBuYXYubm8iLCJleHAiOjE3NzA3Mjg4MDEsImlhdCI6MTc3MDcyNTIwMSwianRpIjoiOWRhNzI3ZTctOWI2OS00ZDFlLThlMWQtMzQ1NWU4OGU5MDI4IiwiZW1haWwiOiJzdGFydC11bWFtaUBuYXYubm8ifQ.FsCSZ4ARw4sodN_YOypDeNN2VUh-Wvf0JcTpdGTPVTTjx9edD9-YoBrg42ha8XhyAOEx6Ol6hC8XD6cwbR81EjDMawaNmd9Og44HJ1U-jGLwpZrBxuKNGST-M8dM1GQ5Yqtulf7KBjDuzB5DjbL4uLOzExTMEJiNdMqA3rT5BowfhniURZadcjXTxU114zhvxZDalylgCXyQ0DUrrsMRrrOkhQFvABdkvgQKk-2mC4iZWUS4fpey-42oNbMi3rcEdrmAYB_wFWQ7XBo867CLY38-QakDcBWrX8tL-yLsKxy3_7Z39Ymni5qSQC_K_M3gbamR77w33bjO4sgybjv8XA
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

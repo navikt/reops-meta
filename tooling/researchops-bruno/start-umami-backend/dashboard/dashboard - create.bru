@@ -1,0 +1,27 @@
+meta {
+  name: dashboard - create
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8086/api/projects/1/dashboards
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJraWQiOiJpc3N1ZWlzc3VlIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJzdGFydC11bWFtaSIsIm5iZiI6MTc3MDcyODI3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2lzc3VlaXNzdWUiLCJuYW1lIjoic3RhcnQtdW1hbWkiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzdGFydC11bWFtaUBuYXYubm8iLCJvaWQiOiJzdGFydC11bWFtaUBuYXYubm8iLCJleHAiOjE3NzA3MzE4NzgsImlhdCI6MTc3MDcyODI3OCwianRpIjoiMGE3ZWIzOTgtMjgwMy00ZGY1LTlkOTktMzQ2MmFiYjU3NDVjIiwiZW1haWwiOiJzdGFydC11bWFtaUBuYXYubm8ifQ.NCrR1hizIRilaD1-70_W8qfFWl2exwMJWif9Ll6huHlYFIOQRMKIlPcOdLpAVbsdGBlE9vnpRpQDbmeqpUlhh-BNkqqFwASIQsbPfNuIQtAqR1CGAcDwqCvPbZCei9LJxSJP_X-keGRC4OeWoR0zm_ZoDGpVufXYnpoQP2VipgYm7_wI9DdxbaUNiXwXuIwgB7xMkYRbIZJWTzjsHE3je4FcN9MRUJIK-AzwZUVfH1sUNyxVV13eUA2D-PRvxDJfBN3HQwVjc5mWpHXfGbkvTOqmjE-e67FzLDzJzq0Npoj7Svpm9ZNqMDLx1COhN0HvawaU7Vu_NpGVlvkrTOt68w
+}
+
+body:json {
+  {
+    "name": "test-dashboard",
+    "description": "description test-dashboard"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

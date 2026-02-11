@@ -1,0 +1,20 @@
+meta {
+  name: changes - get all
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8086/api/changes/project/1/all
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJraWQiOiJpc3N1ZWlzc3VlIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJzdGFydC11bWFtaSIsIm5iZiI6MTc3MDczNDc5NSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2lzc3VlaXNzdWUiLCJuYW1lIjoic3RhcnQtdW1hbWkiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzdGFydC11bWFtaUBuYXYubm8iLCJvaWQiOiJzdGFydC11bWFtaUBuYXYubm8iLCJleHAiOjE3NzA3MzgzOTUsImlhdCI6MTc3MDczNDc5NSwianRpIjoiMTZmNmExMTItNWM4Ny00NmM5LWIwYzEtZDY0MTE2NGNjZTBkIiwiZW1haWwiOiJzdGFydC11bWFtaUBuYXYubm8ifQ.PqTREhrnq55RbrimteqVC6OKLnoPUco5UHVJW1YW_bBFOkIAWXAbZ2lweFAJdg5SJPamA9iJGac1AYZoIKVpFEqNu8bqYbDQY5ewpnTWBp-HGP0nu2Vvtzbq5G_nTZlsFEdRqXdrm-rx7eVdEJwdcxVv7qAhPJWSPAmnGYyxcObiGi40GpziayZnDCh5-YrbRT-Kfuv8b4k1vdt3pK3TT7-NgkxxYJY1pMWwX2ue5oT8EboajsUU_4WpF6g-WPduoyj7ZqvnAO0FLBFk4r7tK9qpjErbDAOXOHQvrD2C3ZYZtwvmnvJpXjTsDApRRyj2gyhn_PH-G_ygPaX-b4cW8Q
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

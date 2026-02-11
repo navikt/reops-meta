@@ -1,0 +1,20 @@
+meta {
+  name: dashboard - delete
+  type: http
+  seq: 3
+}
+
+delete {
+  url: http://localhost:8086/api/projects/1/dashboards/1
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJraWQiOiJpc3N1ZWlzc3VlIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJzdGFydC11bWFtaSIsIm5iZiI6MTc3MDcyMDg2MywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2lzc3VlaXNzdWUiLCJuYW1lIjoic3RhcnQtdW1hbWkiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzdGFydC11bWFtaUBuYXYubm8iLCJvaWQiOiJzdGFydC11bWFtaUBuYXYubm8iLCJleHAiOjE3NzA3MjQ0NjMsImlhdCI6MTc3MDcyMDg2MywianRpIjoiYWU3YzNiMDQtZjIwMy00MmM3LTk4ZDItODkxMjYzMjVjYWEwIiwiZW1haWwiOiJzdGFydC11bWFtaUBuYXYubm8ifQ.Bhqcsfyah7zLMXGlAR3WU5gnHcV9g7vQvWavOA9Mj5exoqynlsvTj6q41vP8QbNkNUOJ3YSUoTna_GEG1EhO-njxrwPQ-jMHzv38_DDerkA39ATsHq7dtT4bQcGEqR10KTiQhZo7DvBDq4Exsw-sz_yeKsCA8vY_3Qh4ozxwZGF2QoSjKHN51s0AS0WI6usJzk1RSZKLLCBOCNoDquvgcU3EX28wRCIGOi1hshkJyKMZIXsZ98NnIHL93IAmo6LHOAB-iM4gjr7R1iT3cq_P4PwsYEtgJzVnO2IM_urp5HQQC5LUusH4tKlGYvMt6mkLBDL8Be8H_Qpv_n2SpTyx3g
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
