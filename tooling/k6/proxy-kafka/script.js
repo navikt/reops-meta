@@ -1,16 +1,23 @@
 import http from 'k6/http';
-import { check, fail, sleep } from 'k6';
-import { Trend } from 'k6/metrics';
+import { check } from 'k6';
+import { Trend, Counter } from 'k6/metrics';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.1.0/index.js';
 
 const ttfb = new Trend('ttfb', true);
+const errorCount = new Counter('errors');
 
-const BASE_URL = __ENV.BASE_URL || 'https://reops-event-proxy.intern.dev.nav.no';
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:8082';
 const ENDPOINT = __ENV.ENDPOINT || '/api/send';
+const SCENARIO = __ENV.SCENARIO || 'stress'; // 'stress' or 'soak'
+
+const screens = ['1920x1080', '1366x768', '390x844', '420x69', '2560x1440'];
+const languages = ['en-GB', 'nb-NO', 'nn-NO', 'en-US', 'sv-SE'];
+const paths = ['/greier', '/prosjekt', '/dashboard', '/rapport', '/oversikt'];
 
 const basePayload = {
     type: 'event',
     payload: {
-        website: 'e3baefc1-c576-4f62-a7c2-9db2dcd13dca',
+        website: '27e38efd-1128-4176-b0d5-ccf3fcbeef05',
         hostname: 'felgen.ansatt.nav.no',
         screen: '420x69',
         language: 'en-GB',
@@ -20,25 +27,42 @@ const basePayload = {
     },
 };
 
-export const options = {
-    scenarios: {
-        send_events: {
-            executor: 'ramping-arrival-rate',
-            startRate: 50,
-            timeUnit: '1s',
-            preAllocatedVUs: 200, // initial pool; increase if you see "insufficient VUs"
-            maxVUs: 2000,
+function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
 
-            stages: [
-                { target: 100, duration: '30s' },  // warmup
-                { target: 300, duration: '1m' },   // step 1
-                { target: 600, duration: '1m' },   // step 2
-                { target: 800, duration: '1m' },   // peak (adjust to your goal)
-                { target: 0,   duration: '30s' },  // ramp down
-            ],
-            gracefulStop: '30s',
-        },
+const stressScenario = {
+    send_events_stress: {
+        executor: 'ramping-arrival-rate',
+        startRate: 50,
+        timeUnit: '1s',
+        preAllocatedVUs: 200,
+        maxVUs: 2000,
+        stages: [
+            { target: 100, duration: '30s' },  // warmup
+            { target: 300, duration: '1m' },   // step 1
+            { target: 600, duration: '1m' },   // step 2
+            { target: 800, duration: '1m' },   // peak
+            { target: 0,   duration: '30s' },  // ramp down
+        ],
+        gracefulStop: '30s',
     },
+};
+
+const soakScenario = {
+    send_events_soak: {
+        executor: 'constant-arrival-rate',
+        rate: 50,
+        timeUnit: '1s',
+        preAllocatedVUs: 100,
+        maxVUs: 300,
+        duration: '10m',
+        gracefulStop: '30s',
+    },
+};
+
+export const options = {
+    scenarios: SCENARIO === 'soak' ? soakScenario : stressScenario,
 
     thresholds: {
         http_req_failed: ['rate<0.001'],
@@ -48,17 +72,49 @@ export const options = {
             'p(99)<2500',
         ],
         ttfb: ['p(95)<1100'],
+        errors: ['count<10'],
     },
 
     noConnectionReuse: false,
     userAgent: 'Mozilla/5.0 (Linux; Android 10; K)',
 };
 
+// Validate that the target is reachable before running the full test
+export function setup() {
+    const url = `${BASE_URL}${ENDPOINT}`;
+    const res = http.post(url, JSON.stringify(basePayload), {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: '10s',
+    });
+
+    const ok = check(res, {
+        'setup: target is reachable': (r) => r.status === 201,
+    });
+
+    if (!ok) {
+        throw new Error(
+            `Target not reachable: ${url} returned status=${res.status}. Aborting test.`
+        );
+    }
+
+    return { startedAt: new Date().toISOString() };
+}
+
 export default function () {
     const url = `${BASE_URL}${ENDPOINT}`;
-    const payload = JSON.parse(JSON.stringify(basePayload));
-    payload.payload.referrer = `${basePayload.payload.referrer}-${__VU}-${__ITER}-${Date.now()}`;
-    payload.payload.title = `${basePayload.payload.title}-${__VU}-${__ITER}`;
+    const path = pick(paths);
+
+    const payload = {
+        type: 'event',
+        payload: {
+            ...basePayload.payload,
+            screen: pick(screens),
+            language: pick(languages),
+            url: `https://felgen.ansatt.nav.no${path}`,
+            referrer: `${basePayload.payload.referrer}-${__VU}-${__ITER}-${Date.now()}`,
+            title: `${basePayload.payload.title}-${__VU}-${__ITER}`,
+        },
+    };
 
     const params = {
         headers: {
@@ -79,9 +135,16 @@ export default function () {
     });
 
     if (!ok) {
-        console.error(
+        errorCount.add(1);
+        console.warn(
             `Unexpected status=${res.status} body=${String(res.body).slice(0, 300)}`
         );
-        fail(`Non-201 response: ${res.status}`);
     }
+}
+
+export function handleSummary(data) {
+    return {
+        stdout: textSummary(data, { indent: ' ', enableColors: true }),
+        'summary.json': JSON.stringify(data, null, 2),
+    };
 }

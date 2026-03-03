@@ -20,3 +20,7 @@ BASE_URL="https://your.env" k6 run script.js
 ```
 BASE_URL="https://your.env" ENDPOINT="/api/send" k6 run script.js
 ```
+### Run soak test (50 rps for 10 minutes)
+```
+SCENARIO="soak" k6 run proxy-kafka/script.js
+```
