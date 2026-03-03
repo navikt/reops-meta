@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kom i gang med sporing – Guide</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/app-page.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-title"><a href="../index.html">#Researchops</a></div>
+        <div class="sidebar-section">Applikasjoner</div>
+        <nav>
+            <a href="../apps/reops-event-proxy.html">
+                <span class="icon">📡</span> reops-event-proxy
+            </a>
+            <a href="../apps/reops-umami-consumer.html">
+                <span class="icon">🔄</span> reops-umami-consumer
+            </a>
+            <a href="../apps/umami.html">
+                <span class="icon">📊</span> umami
+            </a>
+            <a href="../apps/innblikk.html">
+                <span class="icon">🚀</span> innblikk
+            </a>
+            <a href="../apps/umami-proxy.html">
+                <span class="icon">🔀</span> umami-proxy
+            </a>
+        </nav>
+        <div class="sidebar-section" style="margin-top:1.25rem">Tjenester</div>
+        <nav>
+            <a href="../tjenester/bigquery.html">
+                <span class="icon">🗄️</span> bigquery
+            </a>
+        </nav>
+        <div class="sidebar-section" style="margin-top:1.25rem">Guider</div>
+        <nav>
+            <a href="kom-i-gang-med-sporing.html" class="active">
+                <span class="icon">📖</span> kom i gang med sporing
+            </a>
+        </nav>
+    </aside>
+    <div class="content">
+
+    <h1>📖 Kom i gang med sporing</h1>
+    <p class="subtitle">En enkel guide for å sette opp Umami-sporing på din applikasjon.</p>
+
+    <!-- ───── Steg 1 ───── -->
+    <h2>Steg 1 — Be om å få lagt inn en nettside</h2>
+    <div class="card">
+        <p>Før du kan begynne å spore, må nettsiden din registreres i Umami. Send en melding i Slack-kanalen
+            <a href="https://nav-it.slack.com/archives/C02UGFS2J4B" target="_blank"><strong>#researchops</strong></a>
+            og be om å få lagt inn nettsiden din.</p>
+        <p>Oppgi gjerne:</p>
+        <ul>
+            <li>Navn på applikasjonen / nettsiden</li>
+            <li>Domene (f.eks. <code>www.nav.no/min-tjeneste</code>)</li>
+            <li>Hvilket team du tilhører</li>
+        </ul>
+        <p style="margin-top:.75rem;opacity:.7;font-size:.9rem;">
+            💬 Vi svarer vanligvis i løpet av kort tid, og nettsiden blir opprettet i Umami for deg.
+        </p>
+    </div>
+
+    <!-- ───── Steg 2 ───── -->
+    <h2>Steg 2 — Hent sporingskoden din</h2>
+    <div class="card">
+        <p>Når nettsiden er registrert, gå til <strong>Innblikk</strong> for å finne sporingskoden din:</p>
+        <p style="margin:.75rem 0">
+            👉 <a href="https://innblikk.ansatt.nav.no/sporingskoder" target="_blank"><strong>innblikk.ansatt.nav.no/sporingskoder</strong></a>
+        </p>
+        <p>Finn ditt Umami-prosjekt i listen. Du vil se et sporingsskript som ser omtrent slik ut:</p>
+<pre><code>&lt;script
+    defer
+    src="https://cdn.nav.no/team-researchops/sporing/sporing.js"
+    data-host-url="https://umami.nav.no"
+    data-website-id="64d56a03-c3fd-4521-9696-87d5e0511caa"
+&gt;&lt;/script&gt;</code></pre>
+        <p style="margin-top:.75rem;opacity:.7;font-size:.9rem;">
+            ⚠️ <code>data-website-id</code> er unik for din nettside — bruk verdien du finner på sporingskode-siden.
+        </p>
+    </div>
+
+    <!-- ───── Steg 3 ───── -->
+    <h2>Steg 3 — Legg til scriptet i applikasjonen din</h2>
+    <div class="card">
+        <p>Kopier sporingsskriptet fra forrige steg og lim det inn i <code>&lt;head&gt;</code>-taggen i din frontend-applikasjon. For eksempel:</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="no"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Min applikasjon&lt;/title&gt;
+
+    &lt;!-- Umami sporing --&gt;
+    &lt;script
+        defer
+        src="https://cdn.nav.no/team-researchops/sporing/sporing.js"
+        data-host-url="https://umami.nav.no"
+        data-website-id="64d56a03-c3fd-4521-9696-87d5e0511caa"
+    &gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    ...
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p>Det er alt som trengs! Når scriptet er lagt til og deployet, vil sidevisninger automatisk bli sporet.</p>
+    </div>
+
+    <!-- ───── Ferdig ───── -->
+    <h2>🎉 Ferdig!</h2>
+    <div class="card">
+        <p>Etter deploy kan du se trafikkdata i Innblikk:</p>
+        <ul>
+            <li>📊 <a href="https://innblikk.ansatt.nav.no" target="_blank"><strong>innblikk.ansatt.nav.no</strong></a> — dashboards og analyser</li>
+        </ul>
+        <p style="margin-top:.75rem">Trenger du hjelp? Ta kontakt i
+            <a href="https://nav-it.slack.com/archives/C02UGFS2J4B" target="_blank"><strong>#researchops</strong></a> på Slack.
+        </p>
+    </div>
+
+    <footer>
+        Kom i gang med sporing — Team ResearchOps, NAV
+    </footer>
+
+    </div>
+</body>
+</html>
+
