@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery — Tjenestedokumentasjon</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/app-page.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-title"><a href="../index.html">#Researchops</a></div>
+        <div class="sidebar-section">Applikasjoner</div>
+        <nav>
+            <a href="../apps/reops-event-proxy.html">
+                <span class="icon">📡</span> reops-event-proxy
+            </a>
+            <a href="../apps/reops-umami-consumer.html">
+                <span class="icon">🔄</span> reops-umami-consumer
+            </a>
+            <a href="../apps/umami.html">
+                <span class="icon">📊</span> umami
+            </a>
+            <a href="../apps/innblikk.html">
+                <span class="icon">🚀</span> innblikk
+            </a>
+            <a href="../apps/umami-proxy.html">
+                <span class="icon">🔀</span> umami-proxy
+            </a>
+        </nav>
+        <div class="sidebar-section" style="margin-top:1.25rem">Tjenester</div>
+        <nav>
+            <a href="bigquery.html" class="active">
+                <span class="icon">🗄️</span> bigquery
+            </a>
+        </nav>
+    </aside>
+    <div class="content">
+
+    <h1>🗄️ BigQuery</h1>
+    <p class="subtitle">Analysedataene fra Umami speiles til Google BigQuery for fleksible spørringer og innsikt.</p>
+
+    <!-- ───── Oversikt ───── -->
+    <h2>Hva er BigQuery-tjenesten?</h2>
+    <div class="card">
+        <p>
+            <strong>BigQuery</strong> er NAV ResearchOps' sentrale datavarehus for webanalysedata.
+            Data fra Umami speiles til BigQuery på GCP, og tilgjengeliggjøres via API-endepunkter
+            i Innblikk-frontenden. Her kan team kjøre trafikk-, hendelses-, trakt- og lojalitetsanalyser,
+            samt egne SQL-spørringer mot datasettet.
+        </p>
+    </div>
+
+    <!-- ───── Arkitektur ───── -->
+    <h2>Arkitektur</h2>
+    <div class="card">
+        <div class="arch">
+            <div class="arch-box">Umami<br><small>PostgreSQL</small></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box">Speiling<br><small>Dataoverføring</small></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box">BigQuery<br><small>GCP</small></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box">Innblikk API<br><small>Express / Node.js</small></div>
+        </div>
+    </div>
+
+    <!-- ───── API-endepunkter ───── -->
+    <h2>BigQuery API-endepunkter</h2>
+    <p>Alle endepunkter krever autentisering via Azure AD-token.</p>
+
+    <h3>📊 Nettsider <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><span class="badge get">GET</span></td><td><code>/api/bigquery/websites</code></td><td>Lister alle nettsider fra BigQuery (id, navn, domene)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>📈 Trafikk <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge get">GET</span></td>
+                    <td><code>/api/bigquery/websites/:websiteId/traffic-series</code></td>
+                    <td>Trafikkdata over tid (besøk, besøkende, sidevisninger, andel)</td>
+                    <td><code>startAt, endAt, urlPath, interval, metricType, pathOperator, countBy</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>🎯 Hendelser <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge get">GET</span></td>
+                    <td><code>/api/bigquery/websites/:websiteId/events</code></td>
+                    <td>Hendelsesaggregering (navn + antall)</td>
+                    <td><code>startAt, endAt, urlPath, pathOperator</code></td>
+                </tr>
+                <tr>
+                    <td><span class="badge get">GET</span></td>
+                    <td><code>/api/bigquery/websites/:websiteId/event-properties</code></td>
+                    <td>Hendelsesegenskaper og parametre</td>
+                    <td><code>startAt, endAt, includeParams, eventName, urlPath, pathOperator</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>🗺️ Brukerreiser <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Body-parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery/journeys</code></td>
+                    <td>Brukerreiser (Sankey-diagram) — fremover og bakover</td>
+                    <td><code>websiteId, startUrl, startDate, endDate, steps, limit, direction</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>🔻 Trakt <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Body-parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery/funnel</code></td>
+                    <td>Traktanalyse med steg (URL-er eller hendelser med parameterfiltre)</td>
+                    <td><code>websiteId, steps[], startDate, endDate, onlyDirectEntry</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>🔄 Brukerlojalitet <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Body-parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery/retention</code></td>
+                    <td>Retention/lojalitetsanalyse (kohorter over dager)</td>
+                    <td><code>websiteId, startDate, endDate, urlPath, pathOperator, businessDaysOnly, countBy</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>👥 Brukersammensetning <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Body-parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery/composition</code></td>
+                    <td>Sammensetting av brukere (nettleser, OS, enhet, skjerm, språk, land)</td>
+                    <td><code>websiteId, startDate, endDate, urlPath, pathOperator, countBy</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>🧑‍💻 Brukerprofiler <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Body-parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery/users</code></td>
+                    <td>Brukerprofiler (sesjonsdata med paginering og søk)</td>
+                    <td><code>websiteId, startDate, endDate, query, limit, offset, maxUsers, urlPath, countBy</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>🔒 Personvern <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Body-parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery/privacy-check</code></td>
+                    <td>Personvernssjekk — søker etter fødselsnummer, e-post, IP, NAV-ident, etc. i alle kolonner</td>
+                    <td><code>websiteId, startDate, endDate, dryRun</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>🩺 Diagnose <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Body-parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery/diagnosis</code></td>
+                    <td>Global oversikt over alle nettsider (sidevisninger, hendelser, siste aktivitet)</td>
+                    <td><code>startDate, endDate</code></td>
+                </tr>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery/diagnosis-history</code></td>
+                    <td>Historikk for en enkelt nettside</td>
+                    <td><code>websiteId</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>🗄️ SQL <span class="badge" style="background:rgba(23,78,166,.3);color:#93c5fd;border:1px solid rgba(23,78,166,.3)">BQ</span></h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metode</th><th>Sti</th><th>Beskrivelse</th><th>Body-parametre</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery</code></td>
+                    <td>Kjør vilkårlig <strong>SELECT</strong>-spørring mot BigQuery (DDL/DML blokkert)</td>
+                    <td><code>query, analysisType</code></td>
+                </tr>
+                <tr>
+                    <td><span class="badge post">POST</span></td>
+                    <td><code>/api/bigquery/estimate</code></td>
+                    <td>Estimer kostnad for en spørring (dry-run)</td>
+                    <td><code>query, analysisType</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ───── Datamodell ───── -->
+    <h2>Datamodell</h2>
+    <p>Dataene stammer fra Umami og speiles til BigQuery. Nedenfor er de viktigste tabellene.</p>
+
+    <div class="card">
+        <h3>🌐 Website</h3>
+        <p>Tabell: <code>umami.public_website</code></p>
+        <table>
+            <thead><tr><th>Felt</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><code>website_id</code></td><td>UUID, primærnøkkel</td></tr>
+                <tr><td><code>name</code></td><td>Nettsidens navn</td></tr>
+                <tr><td><code>domain</code></td><td>Domene</td></tr>
+                <tr><td><code>share_id</code></td><td>Delings-ID</td></tr>
+                <tr><td><code>team_id</code></td><td>Team-tilhørighet</td></tr>
+                <tr><td><code>created_at</code></td><td>Opprettet tidspunkt</td></tr>
+                <tr><td><code>deleted_at</code></td><td>Slettet tidspunkt</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>📃 WebsiteEvent</h3>
+        <p>Tabell: <code>umami.public_website_event</code></p>
+        <table>
+            <thead><tr><th>Felt</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><code>event_id</code></td><td>UUID</td></tr>
+                <tr><td><code>website_id</code></td><td>Nettside-referanse</td></tr>
+                <tr><td><code>session_id</code></td><td>Sesjonsreferanse</td></tr>
+                <tr><td><code>visit_id</code></td><td>Besøks-ID</td></tr>
+                <tr><td><code>event_type</code></td><td>1 = sidevisning, 2 = egendefinert hendelse</td></tr>
+                <tr><td><code>event_name</code></td><td>Hendelsesnavn</td></tr>
+                <tr><td><code>url_path</code></td><td>URL-sti</td></tr>
+                <tr><td><code>url_query</code></td><td>URL query-streng</td></tr>
+                <tr><td><code>referrer_path / domain</code></td><td>Referansekilde</td></tr>
+                <tr><td><code>page_title</code></td><td>Sidetittel</td></tr>
+                <tr><td><code>utm_source / medium / campaign</code></td><td>UTM-parametre</td></tr>
+                <tr><td><code>created_at</code></td><td>Tidspunkt</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>🧑 Session</h3>
+        <p>Tabell: <code>umami_views.session</code></p>
+        <table>
+            <thead><tr><th>Felt</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><code>session_id</code></td><td>UUID</td></tr>
+                <tr><td><code>website_id</code></td><td>Nettside-referanse</td></tr>
+                <tr><td><code>browser</code></td><td>Nettleser</td></tr>
+                <tr><td><code>os</code></td><td>Operativsystem</td></tr>
+                <tr><td><code>device</code></td><td>Enhetstype</td></tr>
+                <tr><td><code>screen</code></td><td>Skjermoppløsning</td></tr>
+                <tr><td><code>language</code></td><td>Språk</td></tr>
+                <tr><td><code>country</code></td><td>Land (2-bokstavkode)</td></tr>
+                <tr><td><code>distinct_id</code></td><td>Unik ID</td></tr>
+                <tr><td><code>created_at</code></td><td>Opprettet</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>📦 EventData</h3>
+        <p>Tabell: <code>umami_views.event_data</code></p>
+        <table>
+            <thead><tr><th>Felt</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><code>website_event_id</code></td><td>Hendelsesreferanse</td></tr>
+                <tr><td><code>website_id</code></td><td>Nettside-referanse</td></tr>
+                <tr><td><code>event_parameters</code></td><td>Repeated record (se under)</td></tr>
+                <tr><td style="padding-left:2rem"><code>data_key</code></td><td>Parameternavn</td></tr>
+                <tr><td style="padding-left:2rem"><code>string_value</code></td><td>Strengverdi</td></tr>
+                <tr><td style="padding-left:2rem"><code>number_value</code></td><td>Tallverdi</td></tr>
+                <tr><td style="padding-left:2rem"><code>data_type</code></td><td>1=tall, 2=streng, 3=bool, 4=dato</td></tr>
+                <tr><td><code>created_at</code></td><td>Tidspunkt</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        BigQuery — Team ResearchOps, NAV &middot; Sist oppdatert mars 2026
+    </footer>
+
+    </div>
+</body>
+</html>
+

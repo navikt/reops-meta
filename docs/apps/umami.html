@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umami – Applikasjonsdokumentasjon</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/app-page.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-title"><a href="../index.html">#Researchops</a></div>
+        <div class="sidebar-section">Applikasjoner</div>
+        <nav>
+            <a href="reops-event-proxy.html">
+                <span class="icon">📡</span> reops-event-proxy
+            </a>
+            <a href="reops-umami-consumer.html">
+                <span class="icon">🔄</span> reops-umami-consumer
+            </a>
+            <a href="umami.html" class="active">
+                <span class="icon">📊</span> umami
+            </a>
+            <a href="innblikk.html">
+                <span class="icon">🚀</span> innblikk
+            </a>
+            <a href="umami-proxy.html">
+                <span class="icon">🔀</span> umami-proxy
+            </a>
+        </nav>
+        <div class="sidebar-section" style="margin-top:1.25rem">Tjenester</div>
+        <nav>
+            <a href="../tjenester/bigquery.html">
+                <span class="icon">🗄️</span> bigquery
+            </a>
+        </nav>
+    </aside>
+    <div class="content">
+
+    <header>
+        <h1>📊 Umami – NAV ResearchOps</h1>
+        <p>Åpen kildekode produktanalyseverktøy for sporing og analyse av brukerdata på NAVs nettsider og apper.</p>
+        <p><strong>Team:</strong> <code>@navikt/team-researchops</code> · <strong>Versjon:</strong> Umami v3.0.3 · <strong>Runtime:</strong> Next.js (Node 22)</p>
+    </header>
+
+    <!-- ============================== -->
+    <h2>1. Hva er denne applikasjonen?</h2>
+    <div class="card">
+        <p>
+            <strong>umami</strong> er NAVs deployment av <a href="https://github.com/umami-software/umami" target="_blank">Umami</a> –
+            en selvhostet, personvernvennlig webanalyseplattform. Applikasjonen samler inn anonymiserte sidevisnings- og hendelsesdata
+            fra NAVs tjenester og presenterer dem i et brukervennlig dashboard.
+        </p>
+        <p>I tillegg inneholder repoet et sett med <strong>tilpassede sporingsskript</strong> som erstatter standard Umami tracker.
+           Disse skriptene har innebygd redaksjon (masking) av sensitiv informasjon som NAV-identer og UUIDer.</p>
+    </div>
+
+    <div class="card">
+        <strong>Nøkkelegenskaper:</strong>
+        <ul>
+            <li>Ingen informasjonskapsler – fullstendig GDPR-vennlig</li>
+            <li>Kun landsnivå geo-lokalisering (bruker <code>dbip-country-lite.mmdb</code>, ingen bydata)</li>
+            <li>Innebygd redaksjon av NAV-identer, veilederidenter og UUIDer i URL/tittel/referrer</li>
+            <li>PostgreSQL- eller ClickHouse-databasestøtte</li>
+            <li>Kjører som Docker-container på NAIS</li>
+        </ul>
+    </div>
+
+    <!-- ============================== -->
+    <h2>2. Arkitektur</h2>
+    <div class="card">
+<pre><code>┌─────────────────┐      ┌──────────────────────┐      ┌────────────────┐
+│  Brukerens       │      │  Umami Server         │      │  Database       │
+│  nettleser       │─────▶│  (Next.js / Node 22)  │─────▶│  PostgreSQL     │
+│                  │ POST │  Port 3000             │      │  / ClickHouse   │
+│  sporing-*.js    │      │                        │      │                 │
+└─────────────────┘      └──────────────────────┘      └────────────────┘
+                                    │
+                                    ▼
+                          ┌──────────────────┐
+                          │  GeoIP Lookup     │
+                          │  (kun land-nivå)  │
+                          └──────────────────┘</code></pre>
+    </div>
+
+    <!-- ============================== -->
+    <h2>3. API-endepunkter</h2>
+
+    <h3>3.1 Datainnsamling (Tracking)</h3>
+    <div class="card">
+        <table>
+            <thead>
+                <tr><th>Metode</th><th>Endepunkt</th><th>Beskrivelse</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge badge-post">POST</span></td>
+                    <td><code>/api/send</code></td>
+                    <td>Hovedendepunkt for å sende sidevisnings- og hendelsesdata. Brukes av <code>sporing.js</code> og de fleste sporingsskript-varianter.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-post">POST</span></td>
+                    <td><code>/umami</code></td>
+                    <td>Alternativt innsamlingsendepunkt brukt av <code>umamisporing.js</code> (legacy/alternativ rute).</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>3.2 Umami REST API (innebygd)</h3>
+    <p>Umami v3 eksponerer et komplett REST API for administrasjon og datauttak. De viktigste gruppene:</p>
+    <div class="card">
+        <table>
+            <thead>
+                <tr><th>Metode</th><th>Endepunkt</th><th>Beskrivelse</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><span class="badge badge-post">POST</span></td><td><code>/api/auth/login</code></td><td>Autentisering – returnerer JWT-token</td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/api/websites</code></td><td>Hent liste over registrerte nettsteder</td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/api/websites/:id/stats</code></td><td>Hent statistikk (sidevisninger, besøkende, bounce rate, etc.)</td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/api/websites/:id/pageviews</code></td><td>Sidevisninger over tid</td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/api/websites/:id/events</code></td><td>Egendefinerte hendelser over tid</td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/api/websites/:id/metrics</code></td><td>Metrikker (URL-er, referrere, nettlesere, OS, land, etc.)</td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/api/websites/:id/active</code></td><td>Antall aktive besøkende akkurat nå</td></tr>
+                <tr><td><span class="badge badge-post">POST</span></td><td><code>/api/websites</code></td><td>Opprett et nytt nettsted</td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/api/users</code></td><td>Administrer brukere (kun admin)</td></tr>
+                <tr><td><span class="badge badge-get">GET</span></td><td><code>/api/teams</code></td><td>Administrer team</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ============================== -->
+    <h2>4. Datamodell</h2>
+
+    <h3>4.1 Tracking payload (<code>POST /api/send</code>)</h3>
+    <p>Request body som sendes fra sporingsskriptet til serveren:</p>
+    <div class="card">
+<pre><code>{
+  "type": "event" | "identify",
+  "payload": {
+    "website": "uuid-for-nettstedet",
+    "hostname": "www.nav.no",
+    "screen": "1920x1080",
+    "language": "nb-NO",
+    "title": "Sidetittel",
+    "url": "/aktuell/side",
+    "referrer": "https://www.google.com/",
+    "tag": "optional-tag",
+    "name": "event-navn (kun ved hendelser)",
+    "data": { "key": "value" },
+    "id": "valgfri bruker-id"
+  }
+}</code></pre>
+
+        <table>
+            <thead><tr><th>Felt</th><th>Type</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>string</td><td><code>"event"</code> for sidevisning/hendelse, <code>"identify"</code> for brukeridentifisering</td></tr>
+                <tr><td><code>payload.website</code></td><td>string (UUID)</td><td>Nettstedets unike ID i Umami</td></tr>
+                <tr><td><code>payload.hostname</code></td><td>string</td><td>Vertsnavnet til siden</td></tr>
+                <tr><td><code>payload.screen</code></td><td>string</td><td>Skjermoppløsning, f.eks. <code>1920x1080</code></td></tr>
+                <tr><td><code>payload.language</code></td><td>string</td><td>Nettleserens språk</td></tr>
+                <tr><td><code>payload.title</code></td><td>string</td><td>Sidetittel (<code>document.title</code>)</td></tr>
+                <tr><td><code>payload.url</code></td><td>string</td><td>Nåværende URL-sti</td></tr>
+                <tr><td><code>payload.referrer</code></td><td>string</td><td>Referrer-URL</td></tr>
+                <tr><td><code>payload.tag</code></td><td>string?</td><td>Valgfri tag satt via <code>data-tag</code></td></tr>
+                <tr><td><code>payload.name</code></td><td>string?</td><td>Hendelsesnavn (for egendefinerte events)</td></tr>
+                <tr><td><code>payload.data</code></td><td>object?</td><td>Vilkårlig metadata knyttet til hendelsen</td></tr>
+                <tr><td><code>payload.id</code></td><td>string?</td><td>Bruker-ID for identifisering</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>4.2 Response</h3>
+    <div class="card">
+<pre><code>{
+  "cache": "kryptert-cache-token",
+  "disabled": false
+}</code></pre>
+        <table>
+            <thead><tr><th>Felt</th><th>Type</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><code>cache</code></td><td>string</td><td>Cache-token som sendes tilbake som <code>x-umami-cache</code> header ved neste request</td></tr>
+                <tr><td><code>disabled</code></td><td>boolean</td><td>Hvis <code>true</code>, stopper klienten all videre sporing</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>4.3 Databasemodell (Prisma / PostgreSQL)</h3>
+    <p>Umami bruker Prisma ORM. De viktigste tabellene:</p>
+    <div class="card">
+        <table>
+            <thead><tr><th>Tabell</th><th>Beskrivelse</th><th>Nøkkelfelt</th></tr></thead>
+            <tbody>
+                <tr><td><code>website</code></td><td>Registrerte nettsteder</td><td><code>id</code>, <code>name</code>, <code>domain</code>, <code>created_at</code></td></tr>
+                <tr><td><code>session</code></td><td>Besøksøkter (fingerprint-basert)</td><td><code>id</code>, <code>website_id</code>, <code>hostname</code>, <code>browser</code>, <code>os</code>, <code>device</code>, <code>screen</code>, <code>language</code>, <code>country</code></td></tr>
+                <tr><td><code>website_event</code></td><td>Alle sidevisninger og hendelser</td><td><code>id</code>, <code>website_id</code>, <code>session_id</code>, <code>url_path</code>, <code>referrer_path</code>, <code>event_name</code>, <code>event_type</code> (1=sidevisning, 2=hendelse), <code>created_at</code></td></tr>
+                <tr><td><code>event_data</code></td><td>Egendefinert metadata for hendelser</td><td><code>id</code>, <code>website_event_id</code>, <code>event_key</code>, <code>string_value</code>, <code>number_value</code>, <code>date_value</code>, <code>data_type</code></td></tr>
+                <tr><td><code>user</code></td><td>Umami-brukere (for dashboard-innlogging)</td><td><code>id</code>, <code>username</code>, <code>role</code>, <code>created_at</code></td></tr>
+                <tr><td><code>team</code></td><td>Team som kan dele nettsteder</td><td><code>id</code>, <code>name</code>, <code>access_code</code></td></tr>
+                <tr><td><code>team_user</code></td><td>Kobling mellom team og brukere</td><td><code>team_id</code>, <code>user_id</code>, <code>role</code></td></tr>
+                <tr><td><code>team_website</code></td><td>Kobling mellom team og nettsteder</td><td><code>team_id</code>, <code>website_id</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ============================== -->
+    <h2>5. Sporingsskript-varianter</h2>
+    <p>Applikasjonen serverer flere varianter av sporingsskriptet med ulik grad av personvernbeskyttelse:</p>
+
+    <div class="card">
+        <table>
+            <thead><tr><th>Skript</th><th>Endepunkt</th><th>Redaksjon</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><code>sporing.js</code></td>
+                    <td><code>/api/send</code></td>
+                    <td>Ingen – standard Umami v3 tracker</td>
+                </tr>
+                <tr>
+                    <td><code>umamisporing.js</code></td>
+                    <td><code>/umami</code></td>
+                    <td>Ingen – alternativ rute</td>
+                </tr>
+                <tr>
+                    <td><code>sporing-uten-navident.js</code></td>
+                    <td><code>/api/send</code></td>
+                    <td><span class="redact-tag">NAV-ident → [REDACTED-NAVIDENT]</span></td>
+                </tr>
+                <tr>
+                    <td><code>sporing-uten-veilederidentid.js</code></td>
+                    <td><code>/api/send</code></td>
+                    <td><span class="redact-tag">Veilederident → [REDACTED-VEILEDERIDENT]</span></td>
+                </tr>
+                <tr>
+                    <td><code>sporing-uten-uuid.js</code></td>
+                    <td><code>/api/send</code></td>
+                    <td><span class="redact-tag">UUID → [REDACTED-UUID]</span></td>
+                </tr>
+                <tr>
+                    <td><code>sporing-uten-uuid-og-navident.js</code></td>
+                    <td><code>/api/send</code></td>
+                    <td>
+                        <span class="redact-tag">UUID → [REDACTED-UUID]</span>
+                        <span class="redact-tag">NAV-ident → [REDACTED-NAVIDENT]</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>sporing-navet6.js</code></td>
+                    <td><code>/api/send</code></td>
+                    <td>Lesbar/ubehandlet variant for Navet 6</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>5.1 Integrasjon – eksempel</h3>
+    <div class="card">
+<pre><code>&lt;script
+  defer
+  src="https://&lt;umami-host&gt;/sporing/sporing-uten-uuid-og-navident.js"
+  data-website-id="din-website-uuid"
+&gt;&lt;/script&gt;</code></pre>
+    </div>
+
+    <h3>5.2 Script-attributter</h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Attributt</th><th>Påkrevd</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><code>data-website-id</code></td><td>✅</td><td>UUID for nettstedet i Umami</td></tr>
+                <tr><td><code>data-host-url</code></td><td>❌</td><td>Override for Umami-serverens URL</td></tr>
+                <tr><td><code>data-tag</code></td><td>❌</td><td>Tag som legges til alle hendelser</td></tr>
+                <tr><td><code>data-auto-track</code></td><td>❌</td><td>Sett til <code>"false"</code> for å slå av automatisk sporing</td></tr>
+                <tr><td><code>data-do-not-track</code></td><td>❌</td><td>Sett til <code>"true"</code> for å respektere DNT-header</td></tr>
+                <tr><td><code>data-domains</code></td><td>❌</td><td>Kommaseparert liste med domener som tillater sporing</td></tr>
+                <tr><td><code>data-exclude-search</code></td><td>❌</td><td>Sett til <code>"true"</code> for å fjerne query-parametere</td></tr>
+                <tr><td><code>data-exclude-hash</code></td><td>❌</td><td>Sett til <code>"true"</code> for å fjerne hash fra URL</td></tr>
+                <tr><td><code>data-before-send</code></td><td>❌</td><td>Global funksjon som kjøres før sending</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>5.3 JavaScript API</h3>
+    <div class="card">
+<pre><code>// Spor en egendefinert hendelse
+umami.track("knapp-klikket", { kategori: "skjema", verdi: 42 });
+
+// Spor en sidevisning manuelt
+umami.track();
+
+// Identifiser bruker (med data)
+umami.identify({ rolle: "saksbehandler" });</code></pre>
+    </div>
+
+    <footer>
+        umami · Team ResearchOps · NAV · 2026
+    </footer>
+
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>umami-proxy – Dokumentasjon</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/app-page.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-title"><a href="../index.html">#Researchops</a></div>
+        <div class="sidebar-section">Applikasjoner</div>
+        <nav>
+            <a href="reops-event-proxy.html">
+                <span class="icon">📡</span> reops-event-proxy
+            </a>
+            <a href="reops-umami-consumer.html">
+                <span class="icon">🔄</span> reops-umami-consumer
+            </a>
+            <a href="umami.html">
+                <span class="icon">📊</span> umami
+            </a>
+            <a href="innblikk.html">
+                <span class="icon">🚀</span> innblikk
+            </a>
+            <a href="umami-proxy.html" class="active">
+                <span class="icon">🔀</span> umami-proxy
+            </a>
+        </nav>
+        <div class="sidebar-section" style="margin-top:1.25rem">Tjenester</div>
+        <nav>
+            <a href="../tjenester/bigquery.html">
+                <span class="icon">🗄️</span> bigquery
+            </a>
+        </nav>
+    </aside>
+    <div class="content">
+
+    <h1>🔀 umami-proxy</h1>
+    <p class="subtitle">Personvernbevarende reverse-proxy foran <strong>Umami</strong> analytics – bygget med <a href="https://github.com/cloudflare/pingora">Pingora</a> i Rust.</p>
+
+    <!-- ───── Oversikt ───── -->
+    <h2>Hva gjør applikasjonen?</h2>
+    <div class="card">
+        <p><strong>umami-proxy</strong> er en reverse proxy som sitter mellom klientene (nettlesere) og en <a href="https://umami.is/">Umami</a>-instans. Den utfører følgende oppgaver før forespørselen sendes videre:</p>
+        <ul>
+            <li><strong>Bot-filtrering</strong> – blokkerer kjente bot user-agents (HTTP 403).</li>
+            <li><strong>Personvern / redaksjon</strong> – fjerner eller maskerer personopplysninger (fødselsnummer, e-post, IP-adresser, telefonnummer, NAV-identer, filstier, navn m.m.) fra request-body.</li>
+            <li><strong>Felt-validering</strong> – trunkerer felt som overstiger 500 tegn.</li>
+            <li><strong>Annotering</strong> – beriker forespørselen med proxy-versjon og K8s-appinformasjon (team, app-navn, ingress).</li>
+            <li><strong>Geo-lokasjon</strong> – videresender <code>x-client-city</code> / <code>x-client-region</code> som Vercel-kompatible headere.</li>
+            <li><strong>K8s-integrasjon</strong> – watcher på <code>nais.io/v1alpha1 Application</code>-ressurser for å mappe origin → app/team via en LRU-cache med prefix-trie.</li>
+        </ul>
+    </div>
+
+    <!-- ───── Arkitektur ───── -->
+    <h2>Arkitektur</h2>
+    <div class="card">
+        <div class="arch">
+            <div class="arch-box">Klient<br><small>(nettleser)</small></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box">umami-proxy<br><small>:6191 proxy<br>:6969 helse<br>:9090 metrikker</small></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box">Umami<br><small>upstream</small></div>
+        </div>
+        <p style="text-align:center;margin-top:.75rem;opacity:.7;font-size:.85rem;">↕ K8s API (Application watcher)</p>
+    </div>
+
+    <!-- ───── Endepunkter ───── -->
+    <h2>Endepunkter</h2>
+
+    <div class="card">
+        <p><span class="badge post">ALL</span> <span style="font-family:monospace;font-size:1.05rem;font-weight:600">/*</span> <span style="opacity:.6;font-size:.85rem">:6191</span></p>
+        <p>Hoved-proxy. Alle forespørsler videresendes til upstream Umami-instansen (<code>UMAMI_HOST:UMAMI_PORT</code>). Request-body blir validert, redaksjonert og annotert underveis.</p>
+
+        <h3>Prosesseringsflyt</h3>
+        <ol style="padding-left:1.5rem">
+            <li><code>request_filter</code> – Bot-sjekk (403 om bot), spawn K8s-watcher ved første request, ekstraher origin &amp; geo-headere.</li>
+            <li><code>request_body_filter</code> – Buffer body → parse JSON/URL-encoded → <strong>validate</strong> (trunkering) → <strong>redact</strong> (personvern) → <strong>annotate</strong> (proxy-versjon, app-info).</li>
+            <li><code>upstream_request_filter</code> – Sett <code>Host</code>, <code>Transfer-Encoding: Chunked</code>, geo-headere (<code>X-Vercel-IP-Country</code>, <code>X-Vercel-City</code>), og eventuelt path-prefix.</li>
+            <li><code>upstream_peer</code> – Koble til Umami upstream (med TLS om <code>UMAMI_SNI</code> er satt).</li>
+            <li><code>response_filter</code> – Logg status.</li>
+            <li><code>logging</code> – Oppdater Prometheus-metrikker.</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <p><span class="badge get">GET</span> <span style="font-family:monospace;font-size:1.05rem;font-weight:600">/is_alive</span> <span style="opacity:.6;font-size:.85rem">:6969</span></p>
+        <p>Liveness-/readiness-probe. Returnerer <strong>200 OK</strong>. Alle andre stier returnerer <strong>404</strong>.</p>
+    </div>
+
+    <div class="card">
+        <p><span class="badge" style="background:rgba(139,92,246,.35);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)">GET</span> <span style="font-family:monospace;font-size:1.05rem;font-weight:600">/metrics</span> <span style="opacity:.6;font-size:.85rem">:9090</span></p>
+        <p>Prometheus-metrikker (via Pingora sin innebygde Prometheus-tjeneste).</p>
+    </div>
+
+    <!-- ───── Metrikker ───── -->
+    <h2>Prometheus-metrikker</h2>
+    <div class="card">
+        <table>
+            <thead><tr><th>Metrikk</th><th>Type</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><code>incoming_requests_total</code></td><td>Counter</td><td>Totalt antall innkommende forespørsler</td></tr>
+                <tr><td><code>handled_requests_total</code></td><td>Counter</td><td>Vellykket håndterte forespørsler</td></tr>
+                <tr><td><code>proxy_errors_total{error}</code></td><td>Counter (vec)</td><td>Feil gruppert etter type</td></tr>
+                <tr><td><code>upstream_peer_total{peer}</code></td><td>Counter (vec)</td><td>Forespørsler per upstream-sti</td></tr>
+                <tr><td><code>invalid_peer_total</code></td><td>Counter</td><td>Forespørsler uten matchende peer</td></tr>
+                <tr><td><code>ingress_count</code></td><td>Gauge</td><td>Antall ingresser i K8s-cachen</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ───── Datamodeller ───── -->
+    <h2>Datamodeller</h2>
+
+    <h3>Konfigurasjon (miljøvariabler)</h3>
+    <div class="card">
+        <table>
+            <thead><tr><th>Variabel</th><th>Påkrevd</th><th>Beskrivelse</th></tr></thead>
+            <tbody>
+                <tr><td><code>UMAMI_HOST</code></td><td>✅</td><td>Vertsnavn for upstream Umami</td></tr>
+                <tr><td><code>UMAMI_PORT</code></td><td>✅</td><td>Port for upstream Umami</td></tr>
+                <tr><td><code>UMAMI_SNI</code></td><td>❌</td><td>SNI for TLS-tilkobling (aktiverer TLS om satt)</td></tr>
+                <tr><td><code>UMAMI_PATH</code></td><td>❌</td><td>Sti-prefix som legges foran upstream-URL</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>AppInfo (K8s-cache)</h3>
+    <div class="card">
+        <p>Hentet fra <code>nais.io/v1alpha1 Application</code> CRD. Lagres i en LRU-cache (maks 2000 oppføringer) med prefix-trie for raskt oppslag.</p>
+<pre><code>struct AppInfo {
+    app_name: String,           // metadata.name
+    namespace: String,          // metadata.namespace (team)
+    ingress: String,            // spec.ingresses[0]
+    creation_timestamp: String, // metadata.creationTimestamp
+}</code></pre>
+    </div>
+
+    <h3>Forespørselskropp (Umami JSON-payload)</h3>
+    <div class="card">
+        <p>Proxyen aksepterer to innholdstyper:</p>
+        <p style="margin:.5rem 0">
+            <span class="badge get">application/json</span>
+            <span class="badge" style="background:rgba(245,158,11,.35);color:#fde68a;border:1px solid rgba(245,158,11,.3)">application/x-www-form-urlencoded</span>
+        </p>
+        <p>URL-encoded data konverteres til JSON:</p>
+<pre><code>{
+  "events": [...],    // fra parameter "e"
+  "api-key": "...",   // fra parameter "client"
+  "payload": {
+    "hostname": "www.example.com",  // brukes til K8s-oppslag
+    ...
+  }
+}</code></pre>
+        <p>Etter prosessering annoteres kroppen med:</p>
+<pre><code>{
+  "proxyVersion": "umami-proxy-1.0.0",
+  "event_properties": {
+    "team": "mitt-team",
+    "app": "min-app",
+    "ingress": "https://min-app.nav.no",
+    "hostname": "www.example.com",
+    ...
+  }
+}</code></pre>
+    </div>
+
+    <h3>Proxy-kontekst (intern)</h3>
+    <div class="card">
+<pre><code>struct Ctx {
+    request_body_buffer: Vec&lt;u8&gt;,   // Bufrer hele forespørselskroppen
+    location: Option&lt;Location&gt;,      // Geo-data fra GCP LB-headere
+    ingress: String,                  // Origin-header (uten scheme)
+    proxy_start: Option&lt;Instant&gt;,    // Tidspunkt for forespørsel
+}
+
+struct Location {
+    city: String,     // fra x-client-city
+    country: String,  // fra x-client-region
+}</code></pre>
+    </div>
+
+    <!-- ───── Personvernredaksjon ───── -->
+    <h2>Personvernredaksjon</h2>
+    <div class="card">
+        <p>Alle strengverdier i JSON-kroppen sjekkes mot følgende mønstre (i prioritert rekkefølge):</p>
+        <table>
+            <thead><tr><th>Mønster</th><th>Merkelapp</th><th>Eksempel</th></tr></thead>
+            <tbody>
+                <tr><td>URL-er (http/https)</td><td><code>PROXY-PRESERVE-URL</code></td><td>Bevares</td></tr>
+                <tr><td>Filstier</td><td><code>PROXY-FILEPATH</code></td><td><code>C:\Users\ola\doc.pdf</code></td></tr>
+                <tr><td>Fødselsnummer (11 siffer)</td><td><code>PROXY-FNR</code></td><td><code>12345678901</code></td></tr>
+                <tr><td>NAV-ident</td><td><code>PROXY-NAVIDENT</code></td><td><code>Z123456</code></td></tr>
+                <tr><td>E-post</td><td><code>PROXY-EMAIL</code></td><td><code>ola@nav.no</code></td></tr>
+                <tr><td>IP-adresse</td><td><code>PROXY-IP</code></td><td><code>192.168.1.1</code></td></tr>
+                <tr><td>Telefonnummer (8 siffer)</td><td><code>PROXY-PHONE</code></td><td><code>99887766</code></td></tr>
+            </tbody>
+        </table>
+        <p style="margin-top:.75rem;opacity:.7;font-size:.9rem;">
+            ⚠️ Felt-validering trunkerer strenger over <strong>500 tegn</strong> og legger til <code>TRUNCATED</code>-suffiks.
+        </p>
+    </div>
+
+    <!-- ───── Feilhåndtering ───── -->
+    <h2>Feilhåndtering</h2>
+
+    <div class="card">
+        <h3>Proxy-feil (egendefinerte)</h3>
+        <ul>
+            <li><code>RequestContainsInvalidJson</code></li>
+            <li><code>JsonCoParseError</code></li>
+            <li><code>NoMatchingPeer</code></li>
+            <li><code>PrematureBodyEnd</code></li>
+            <li><code>FieldTooLong</code></li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h3>Kategoriserte Pingora-feil</h3>
+        <ul>
+            <li><code>SslError</code> – TLS-handshake, sertifikat</li>
+            <li><code>ConnectionError</code> – Timeout, refused, no route</li>
+            <li><code>ClientDisconnectedError</code></li>
+            <li><code>UpstreamConnectionFailure</code></li>
+            <li><code>UntrackedError</code> – alt annet</li>
+        </ul>
+    </div>
+
+    <!-- ───── Konfigurasjon ───── -->
+    <h2>Konfigurasjon</h2>
+    <div class="card">
+        <h3>Pingora (<code>conf/conf.yaml</code>)</h3>
+<pre><code>---
+version: 1
+threads: 8
+upstream_keepalive_pool_size: 16384</code></pre>
+    </div>
+
+    <!-- ───── Teknologistack ───── -->
+    <h2>Teknologistack</h2>
+    <div class="card">
+        <ul>
+            <li><strong>Språk:</strong> Rust</li>
+            <li><strong>Proxy-rammeverk:</strong> Pingora (Cloudflare)</li>
+            <li><strong>Asynkron runtime:</strong> Tokio</li>
+            <li><strong>Metrikker:</strong> Prometheus</li>
+            <li><strong>Kubernetes:</strong> kube-rs (Application watcher)</li>
+            <li><strong>Serialisering:</strong> serde_json</li>
+            <li><strong>Cache:</strong> LRU-cache + Prefix Trie</li>
+            <li><strong>Bot-deteksjon:</strong> isbot</li>
+            <li><strong>Regex:</strong> fancy-regex</li>
+        </ul>
+    </div>
+
+    <footer>
+        umami-proxy &middot; Team ResearchOps, NAV &middot; Sist oppdatert mars 2026
+    </footer>
+
+    </div>
+</body>
+</html>
+

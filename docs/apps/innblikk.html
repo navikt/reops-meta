@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innblikk — Applikasjonsdokumentasjon</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/app-page.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-title"><a href="../index.html">#Researchops</a></div>
+        <div class="sidebar-section">Applikasjoner</div>
+        <nav>
+            <a href="reops-event-proxy.html">
+                <span class="icon">📡</span> reops-event-proxy
+            </a>
+            <a href="reops-umami-consumer.html">
+                <span class="icon">🔄</span> reops-umami-consumer
+            </a>
+            <a href="umami.html">
+                <span class="icon">📊</span> umami
+            </a>
+            <a href="innblikk.html" class="active">
+                <span class="icon">🚀</span> innblikk
+            </a>
+        </nav>
+        <div class="sidebar-section" style="margin-top:1.25rem">Tjenester</div>
+        <nav>
+            <a href="../tjenester/bigquery.html">
+                <span class="icon">🗄️</span> bigquery
+            </a>
+        </nav>
+    </aside>
+    <div class="content">
+
+    <h1>🚀 Innblikk — Innblikk Frontend</h1>
+    <p class="subtitle">Webanalyse og produktinnsikt for NAV — bygget på Umami + BigQuery</p>
+
+    <!-- ───── Oversikt ───── -->
+    <h2>Hva er Innblikk?</h2>
+    <div class="card">
+        <p>
+            <strong>Innblikk</strong> er NAVs interne verktøy for webanalyse.
+            Applikasjonen gir produktteam innsikt i brukeradferd gjennom ferdigbygde dashboards,
+            hendelsesutforsking, trafikkanalyser, traktanalyser, brukerreiser og personvernssjekker
+            — alt uten å gå på bekostning av brukervennlighet, datasikkerhet eller personvern.
+        </p>
+        <p style="margin-top:.5rem">
+            Data lagres i <strong>BigQuery</strong> (GCP) og Umami-instansen,
+            og tilgjengeliggjøres via en Express-server som proxy-er mot backend, Siteimprove og BigQuery.
+        </p>
+    </div>
+
+    <!-- ───── Arkitektur ───── -->
+    <h2>Arkitektur</h2>
+    <div class="card">
+        <div class="arch">
+            <div class="arch-box">React SPA<br><small>Vite + React 19<br>NAV Aksel DS</small></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box">Express Server<br><small>Node.js<br>Auth &amp; Proxy</small></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box">BigQuery<br><small>GCP<br>Umami-data</small></div>
+        </div>
+        <div class="arch" style="margin-top:.5rem">
+            <div class="arch-box">Backend API<br><small>start-umami-backend<br>Prosjekter, Dashboards</small></div>
+            <div class="arch-arrow">←</div>
+            <div class="arch-box">Express Server<br><small>OBO-token / proxy</small></div>
+            <div class="arch-arrow">→</div>
+            <div class="arch-box">Siteimprove<br><small>Proxy<br>Kvalitetssjekker</small></div>
+        </div>
+    </div>
+
+    <h3>Teknologier</h3>
+    <div class="card">
+        <ul>
+            <li><strong>Frontend:</strong> React 19, TypeScript, Vite 7, Tailwind CSS, Fluent UI Charting, NAV Aksel</li>
+            <li><strong>Server:</strong> Express 5, Node.js, <code>@navikt/oasis</code> (Azure AD auth), Helmet</li>
+            <li><strong>Data:</strong> Google BigQuery, Umami (webanalyse), Siteimprove (kvalitetsstyring)</li>
+        </ul>
+    </div>
+
+    <!-- ───── Frontend-sider ───── -->
+    <h2>Frontend-sider</h2>
+    <div class="card">
+        <table>
+            <thead><tr><th>Sti</th><th>Funksjon</th><th>Komponent</th></tr></thead>
+            <tbody>
+                <tr><td><code>/</code></td><td>Hjem</td><td>Home</td></tr>
+                <tr><td><code>/komigang</code></td><td>Kom i gang-guide</td><td>Komigang</td></tr>
+                <tr><td><code>/oppsett</code></td><td>Oppsettguide</td><td>Oppsett</td></tr>
+                <tr><td><code>/sporingskoder</code></td><td>Sporingskoder</td><td>Sporingskoder</td></tr>
+                <tr><td><code>/dashboards</code></td><td>Dashboard-oversikt</td><td>DashboardOverview</td></tr>
+                <tr><td><code>/dashboard</code></td><td>Dashboard</td><td>Dashboard</td></tr>
+                <tr><td><code>/oversikt</code></td><td>Prosjektoversikt</td><td>Oversikt</td></tr>
+                <tr><td><code>/prosjekter</code></td><td>Prosjekthåndtering</td><td>ProjectManager</td></tr>
+                <tr><td><code>/trafikkanalyse</code></td><td>Trafikkanalyse (besøk over tid)</td><td>TrafficAnalysis</td></tr>
+                <tr><td><code>/markedsanalyse</code></td><td>Markedsanalyse (UTM, referanser)</td><td>MarketingAnalysis</td></tr>
+                <tr><td><code>/utforsk-hendelser</code></td><td>Hendelsesutforsker</td><td>EventExplorer</td></tr>
+                <tr><td><code>/datastruktur</code></td><td>Datastruktur</td><td>EventExplorer</td></tr>
+                <tr><td><code>/hendelsesreiser</code></td><td>Hendelsesreiser</td><td>EventJourney</td></tr>
+                <tr><td><code>/brukerreiser</code></td><td>Brukerreiser (Sankey)</td><td>UserJourney</td></tr>
+                <tr><td><code>/trakt</code></td><td>Traktanalyse</td><td>Funnel</td></tr>
+                <tr><td><code>/brukerlojalitet</code></td><td>Retention / lojalitet</td><td>Retention</td></tr>
+                <tr><td><code>/brukersammensetning</code></td><td>Brukersammensetning</td><td>UserComposition</td></tr>
+                <tr><td><code>/brukerprofiler</code></td><td>Brukerprofiler</td><td>UserProfiles</td></tr>
+                <tr><td><code>/profil</code></td><td>Brukerprofil (enkelt)</td><td>UserProfile</td></tr>
+                <tr><td><code>/personvernssjekk</code></td><td>Personvernssjekk</td><td>PrivacyCheck</td></tr>
+                <tr><td><code>/diagnose</code></td><td>Diagnostisering</td><td>Diagnosis</td></tr>
+                <tr><td><code>/sql</code></td><td>SQL-editor</td><td>SqlEditor</td></tr>
+                <tr><td><code>/grafbygger</code></td><td>Grafbygger</td><td>Grafbygger</td></tr>
+                <tr><td><code>/grafdeling</code></td><td>Grafdeling</td><td>Grafdeling</td></tr>
+                <tr><td><code>/personvern</code></td><td>Personverninfo</td><td>Personvern</td></tr>
+                <tr><td><code>/tilgjengelighet</code></td><td>Tilgjengelighetserklæring</td><td>Tilgjengelighet</td></tr>
+                <tr><td><code>/taksonomi</code></td><td>Taksonomi</td><td>Taksonomi</td></tr>
+                <tr><td><code>/metabase</code></td><td>Metabase-guide</td><td>MetabaseGuide</td></tr>
+                <tr><td><code>/kvalitet/odelagte-lenker</code></td><td>Ødelagte lenker</td><td>BrokenLinks</td></tr>
+                <tr><td><code>/kvalitet/stavekontroll</code></td><td>Stavekontroll</td><td>Spellings</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ───── Sikkerhet ───── -->
+    <h2>Sikkerhet og autentisering</h2>
+    <div class="card">
+        <ul>
+            <li><strong>Azure AD / @navikt/oasis:</strong> Alle <code>/api/bigquery</code> og <code>/api/backend</code> ruter krever autentisering via Azure AD-token.</li>
+            <li><strong>OBO-token:</strong> Backend-proxyen utveksler brukerens token med On-Behalf-Of (OBO) mot start-umami-backend.</li>
+            <li><strong>SQL-validering:</strong> SQL-editoren tillater kun <code>SELECT</code>/<code>WITH</code>-spørringer. DML/DDL (INSERT, UPDATE, DELETE, DROP, etc.) blokkeres.</li>
+            <li><strong>BigQuery-kostnadsgrense:</strong> Alle spørringer har en maks grense på <code>500 GB</code> skannet data.</li>
+            <li><strong>Helmet:</strong> HTTP-sikkerhetshoder satt via Helmet-mellomvare.</li>
+            <li><strong>Revisjonslogg:</strong> Alle BigQuery-spørringer logges med NAV-ident og analysetype.</li>
+        </ul>
+    </div>
+
+    <footer>
+        Innblikk — Team ResearchOps, NAV &middot; Sist oppdatert mars 2026
+    </footer>
+
+    </div>
+</body>
+</html>
+
+

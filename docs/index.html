@@ -1,43 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReOps Documentation</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-        }
-        .container {
-            text-align: center;
-            padding: 2rem;
-        }
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        p {
-            font-size: 1.25rem;
-            opacity: 0.9;
-        }
-    </style>
+    <title>ReOps – Dokumentasjon</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-    <div class="container">
-        <h1>#Researchops</h1>
-        <p>Dette er en test</p>
+    <aside class="sidebar">
+        <div class="sidebar-title"><a href="index.html">#Researchops</a></div>
+        <div class="sidebar-section">Applikasjoner</div>
+        <nav>
+            <a href="apps/reops-event-proxy.html">
+                <span class="icon">📡</span> reops-event-proxy
+            </a>
+            <a href="apps/reops-umami-consumer.html">
+                <span class="icon">🔄</span> reops-umami-consumer
+            </a>
+            <a href="apps/umami.html">
+                <span class="icon">📊</span> umami
+            </a>
+            <a href="apps/innblikk.html">
+                <span class="icon">🚀</span> innblikk
+            </a>
+            <a href="apps/umami-proxy.html">
+                <span class="icon">🔀</span> umami-proxy
+            </a>
+        </nav>
+        <div class="sidebar-section" style="margin-top:1.25rem">Tjenester</div>
+        <nav>
+            <a href="tjenester/bigquery.html">
+                <span class="icon">🗄️</span> bigquery
+            </a>
+        </nav>
+    </aside>
+    <div class="main">
+        <div class="hero">
+            <h1>#Researchops dokumentasjon</h1>
+            <p>Dokumentasjon for ResearchOps-teamets applikasjoner og tjenester.</p>
+        </div>
+        <div class="contact">
+            <h2>Kontakt</h2>
+            <div class="card">
+                <ul>
+                    <li>📄 <a href="https://innblikk.ansatt.nav.no/" target="_blank">Innblikk</a></li>
+                    <li>💬 <a href="https://nav-it.slack.com/archives/C02UGFS2J4B" target="_blank">#researchops</a> på Slack</li>
+                    <li>📧 <a href="mailto:researchops@nav.no">researchops@nav.no</a></li>
+                    <li>🔗 <a href="https://github.com/orgs/navikt/projects/186" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
 </body>
 </html>
-

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>reops-umami-consumer – Oversikt</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/app-page.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-title"><a href="../index.html">#Researchops</a></div>
+        <div class="sidebar-section">Applikasjoner</div>
+        <nav>
+            <a href="reops-event-proxy.html">
+                <span class="icon">📡</span> reops-event-proxy
+            </a>
+            <a href="reops-umami-consumer.html" class="active">
+                <span class="icon">🔄</span> reops-umami-consumer
+            </a>
+            <a href="umami.html">
+                <span class="icon">📊</span> umami
+            </a>
+            <a href="innblikk.html">
+                <span class="icon">🚀</span> innblikk
+            </a>
+            <a href="umami-proxy.html">
+                <span class="icon">🔀</span> umami-proxy
+            </a>
+        </nav>
+        <div class="sidebar-section" style="margin-top:1.25rem">Tjenester</div>
+        <nav>
+            <a href="../tjenester/bigquery.html">
+                <span class="icon">🗄️</span> bigquery
+            </a>
+        </nav>
+    </aside>
+    <div class="content">
+
+    <h1>🔄 reops-umami-consumer</h1>
+    <p class="subtitle">Kafka-consumer som leser analytics-events, kjører personvernfiltrering, og videresender dem til Umami.</p>
+
+    <!-- ───── Arkitektur ───── -->
+    <h2>Arkitektur</h2>
+    <div class="card">
+        <div class="flow-diagram">
+            <div class="flow-box">Kafka-topic</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box">KafkaService</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box">FilterService</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box">UmamiService</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box">Umami API<br><small>/api/send</small></div>
+        </div>
+        <ul>
+            <li><strong>Kafka-topic</strong> – Mottar rå analytics-events (JSON).</li>
+            <li><strong>KafkaService</strong> – Lytter på topic, deserialiserer til <code>Event</code>, og orkestrerer flyten.</li>
+            <li><strong>FilterService</strong> – Personvernfiltrering: strukturelle regler, URL-policy og regex-basert redaksjon.</li>
+            <li><strong>UmamiService</strong> – Sender det filtrerte eventet videre til Umami via HTTP POST.</li>
+        </ul>
+    </div>
+
+    <!-- ───── Teknologier ───── -->
+    <h2>Teknologier</h2>
+    <div class="card">
+        <table>
+            <tr><th>Komponent</th><th>Teknologi</th></tr>
+            <tr><td>Språk</td><td>Kotlin 2.3 / Java 25</td></tr>
+            <tr><td>Rammeverk</td><td>Spring Boot 4.0 (WebFlux / reactive)</td></tr>
+            <tr><td>Kafka</td><td>spring-kafka med manuell ack</td></tr>
+            <tr><td>HTTP-klient</td><td>WebClient (Reactor/Netty)</td></tr>
+            <tr><td>Metrikker</td><td>Micrometer → Prometheus</td></tr>
+            <tr><td>Native</td><td>GraalVM native-image (valgfritt)</td></tr>
+        </table>
+    </div>
+
+    <!-- ───── Kafka-inntak ───── -->
+    <h2>Kafka-inntak</h2>
+    <div class="card">
+        <table>
+            <tr><th>Egenskap</th><th>Verdi</th></tr>
+            <tr><td>Topic</td><td><code>${spring.kafka.topic}</code> (standard: <code>test2</code>)</td></tr>
+            <tr><td>Consumer-group</td><td><code>reops-umami-consumer-group</code></td></tr>
+            <tr><td>Ack-modus</td><td>MANUAL</td></tr>
+            <tr><td>Auto-offset-reset</td><td>earliest</td></tr>
+        </table>
+
+        <h3>Kafka-headers som leses</h3>
+        <table>
+            <tr><th>Header</th><th>Påkrevd</th><th>Beskrivelse</th></tr>
+            <tr><td><code>user-agent</code></td><td>Nei</td><td>Videresendes til Umami. Fallback: <code>"unknown"</code></td></tr>
+            <tr><td><code>x-exclude-filters</code></td><td>Nei</td><td>Kommaseparert liste med feltnøkler som skal unntas fra redaksjon</td></tr>
+            <tr><td><code>x-forwarded-for</code></td><td>Nei</td><td>Videresendes til Umami for klientens IP</td></tr>
+        </table>
+    </div>
+
+    <!-- ───── HTTP-endepunkter ───── -->
+    <h2>HTTP-endepunkter</h2>
+
+    <div class="card">
+        <h3>Utgående kall <span class="badge badge-post">POST</span></h3>
+        <p><code>POST {reops.umami.url}/api/send</code></p>
+        <p>Sender filtrert event til Umami. Headers som settes:</p>
+        <table>
+            <tr><th>Header</th><th>Verdi</th></tr>
+            <tr><td><code>Content-Type</code></td><td><code>application/json</code></td></tr>
+            <tr><td><code>user-agent</code></td><td>Fra Kafka-header (eller <code>"unknown"</code>)</td></tr>
+            <tr><td><code>x-forwarded-for</code></td><td>Fra Kafka-header (kun hvis tilstede)</td></tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Actuator-endepunkter <span class="badge badge-get">GET</span></h3>
+        <p>Basepath: <code>/internal/</code> &nbsp;|&nbsp; Port: <code>8080</code></p>
+        <table>
+            <tr><th>Endepunkt</th><th>Beskrivelse</th></tr>
+            <tr><td><code>GET /internal/health</code></td><td>Helsestatus for applikasjonen</td></tr>
+            <tr><td><code>GET /internal/info</code></td><td>Applikasjonsinformasjon</td></tr>
+            <tr><td><code>GET /internal/metrics</code></td><td>Micrometer-metrikker</td></tr>
+            <tr><td><code>GET /internal/prometheus</code></td><td>Prometheus-scraping</td></tr>
+        </table>
+    </div>
+
+    <!-- ───── Datamodell ───── -->
+    <h2>Datamodell</h2>
+
+    <div class="card">
+        <h3><code>Event</code></h3>
+        <pre><code>{
+  "type": "event",
+  "payload": {
+    "website":  "550e8400-e29b-41d4-a716-446655440000",
+    "id":       "session-id (valgfri)",
+    "hostname": "www.nav.no",
+    "screen":   "1920x1080",
+    "language": "nb-NO",
+    "title":    "Sidetittel",
+    "url":      "/arbeid/dagpenger",
+    "referrer": "https://www.nav.no/",
+    "name":     "klikk-knapp",
+    "data":     { /* vilkårlig JSON – se nedenfor */ }
+  }
+}</code></pre>
+
+        <h3><code>Event.Payload</code> – Feltbeskrivelse</h3>
+        <table>
+            <tr><th>Felt</th><th>Type</th><th>Påkrevd</th><th>Beskrivelse</th></tr>
+            <tr><td><code>website</code></td><td>UUID</td><td>Ja</td><td>Unik identifikator for nettstedet i Umami</td></tr>
+            <tr><td><code>id</code></td><td>String?</td><td>Nei</td><td>Sesjons-/bruker-ID</td></tr>
+            <tr><td><code>hostname</code></td><td>String?</td><td>Nei</td><td>Vertsnavnet til kilden</td></tr>
+            <tr><td><code>screen</code></td><td>String?</td><td>Nei</td><td>Skjermoppløsning</td></tr>
+            <tr><td><code>language</code></td><td>String?</td><td>Nei</td><td>Nettleserspråk</td></tr>
+            <tr><td><code>title</code></td><td>String?</td><td>Nei</td><td>Sidetittel</td></tr>
+            <tr><td><code>url</code></td><td>String?</td><td>Nei</td><td>Side-URL (filtreres som URL)</td></tr>
+            <tr><td><code>referrer</code></td><td>String?</td><td>Nei</td><td>Referanse-URL (filtreres som URL)</td></tr>
+            <tr><td><code>name</code></td><td>String?</td><td>Nei</td><td>Eventnavn (custom-event)</td></tr>
+            <tr><td><code>data</code></td><td>JsonNode?</td><td>Nei</td><td>Vilkårlig JSON-data (traverseres rekursivt av filteret)</td></tr>
+        </table>
+    </div>
+
+    <!-- ───── Personvernfilter ───── -->
+    <h2>Personvernfilter (FilterService)</h2>
+    <div class="card">
+        <p>Filteret kjører i tre uavhengige lag:</p>
+
+        <h3>1. Strukturelle regler (nøkkelbasert)</h3>
+        <table>
+            <tr><th>Nøkkel</th><th>Handling</th><th>Resultat</th></tr>
+            <tr><td><code>ip_address</code></td><td><span class="badge badge-drop">DROP</span></td><td>Feltet fjernes</td></tr>
+            <tr><td><code>ip</code></td><td>Erstattes</td><td><code>"$remote"</code></td></tr>
+            <tr><td><code>api_key</code>, <code>device_id</code>, <code>website</code></td><td>Bevares</td><td>Uendret</td></tr>
+            <tr><td>Advertising-ID-er (<code>idfa</code>, <code>gaid</code>, …)</td><td>Anonymisert</td><td><code>"[PROXY]"</code></td></tr>
+        </table>
+
+        <h3>2. URL-policy (kontekstbasert)</h3>
+        <p><code>payload.url</code> og <code>payload.referrer</code> behandles som URL-er. Inne i <code>payload.data</code> gjenkjennes nøkler som <code>url</code>, <code>href</code>, <code>path</code>, <code>pathname</code>, <code>destination</code>, <code>lenkesti</code>, m.fl. og håndteres med URL-sanitering.</p>
+
+        <h3>3. Regex-basert redaksjon</h3>
+        <table>
+            <tr><th>Regel</th><th>Label</th><th>Hva fanges</th></tr>
+            <tr><td>Fødselsnummer</td><td><code>PROXY-FNR</code></td><td>11-sifret tall</td></tr>
+            <tr><td>NAV-ident</td><td><code>PROXY-NAVIDENT</code></td><td>Bokstav + 6 siffer</td></tr>
+            <tr><td>E-post</td><td><code>PROXY-EMAIL</code></td><td>E-postadresser</td></tr>
+            <tr><td>IP-adresse</td><td><code>PROXY-IP</code></td><td>IPv4-adresser</td></tr>
+            <tr><td>Telefonnummer</td><td><code>PROXY-PHONE</code></td><td>8-sifret norsk nummer</td></tr>
+            <tr><td>Navn</td><td><code>PROXY-NAME</code></td><td>To/tre ord med stor forbokstav</td></tr>
+            <tr><td>Adresse</td><td><code>PROXY-ADDRESS</code></td><td>Postnr + stedsnavn</td></tr>
+            <tr><td>Hemmelig adresse</td><td><code>PROXY-SECRET-ADDRESS</code></td><td>"hemmelig adresse"</td></tr>
+            <tr><td>Kontonummer</td><td><code>PROXY-ACCOUNT</code></td><td>11-sifret kontonr</td></tr>
+            <tr><td>Org.nummer</td><td><code>PROXY-ORG-NUMBER</code></td><td>9-sifret org.nr</td></tr>
+            <tr><td>Bilskilt</td><td><code>PROXY-LICENSE-PLATE</code></td><td>2 bokstaver + 5 siffer</td></tr>
+            <tr><td>Søkestrenger</td><td><code>PROXY-SEARCH</code></td><td>Query-parametre (q, query, search, …)</td></tr>
+            <tr><td>Filstier</td><td><code>PROXY-FILEPATH</code></td><td>Absolutte/relative filstier</td></tr>
+        </table>
+    </div>
+
+    <!-- ───── Metrikker ───── -->
+    <h2>Metrikker (Prometheus)</h2>
+    <div class="card">
+        <table>
+            <tr><th>Metrikk</th><th>Labels</th><th>Beskrivelse</th></tr>
+            <tr><td><code>kafka_events_processed_total</code></td><td><code>result=success|failure</code></td><td>Antall events konsumert fra Kafka</td></tr>
+            <tr><td><code>umami_requests_total</code></td><td><code>result=success|failure</code></td><td>Antall HTTP-kall til Umami</td></tr>
+            <tr><td><code>redactions_total</code></td><td><code>rule=fnr|email|ip|…</code></td><td>Antall redaksjoner per regel</td></tr>
+        </table>
+    </div>
+
+    <footer>
+        reops-umami-consumer &middot; NAV / reops
+    </footer>
+
+    </div>
+</body>
+</html>
+

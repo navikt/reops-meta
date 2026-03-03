@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>reops-event-proxy – Dokumentasjon</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/app-page.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-title"><a href="../index.html">#Researchops</a></div>
+        <div class="sidebar-section">Applikasjoner</div>
+        <nav>
+            <a href="reops-event-proxy.html" class="active">
+                <span class="icon">📡</span> reops-event-proxy
+            </a>
+            <a href="reops-umami-consumer.html">
+                <span class="icon">🔄</span> reops-umami-consumer
+            </a>
+            <a href="umami.html">
+                <span class="icon">📊</span> umami
+            </a>
+            <a href="innblikk.html">
+                <span class="icon">🚀</span> innblikk
+            </a>
+            <a href="umami-proxy.html">
+                <span class="icon">🔀</span> umami-proxy
+            </a>
+        </nav>
+        <div class="sidebar-section" style="margin-top:1.25rem">Tjenester</div>
+        <nav>
+            <a href="../tjenester/bigquery.html">
+                <span class="icon">🗄️</span> bigquery
+            </a>
+        </nav>
+    </aside>
+    <div class="content">
+
+    <h1>📡 reops-event-proxy</h1>
+    <p class="subtitle">Mottar insight-events over HTTP og publiserer dem til Kafka</p>
+
+    <!-- ───── Oversikt ───── -->
+    <h2>Oversikt</h2>
+    <div class="card">
+        <p><strong>reops-event-proxy</strong> er en lettvekts Spring Boot 4-applikasjon (Kotlin, WebFlux reaktiv)
+            som fungerer som en HTTP → Kafka-proxy for innsikt-hendelser (analytics events).</p>
+        <ul>
+            <li>Mottar hendelser via <code>POST /api/send</code></li>
+            <li>Validerer og saniterer (trunkerer) feltene før publisering</li>
+            <li>Publiserer hendelsen som JSON til et konfigurerbart Kafka-topic</li>
+            <li>Eksponerer Prometheus-metrikker og helsesjekker via Spring Actuator</li>
+            <li>Støtter GraalVM native image for lav oppstartstid og lavt minneforbruk</li>
+        </ul>
+    </div>
+
+    <!-- ───── Arkitektur ───── -->
+    <h2>Arkitektur</h2>
+    <div class="arch">
+        <div class="arch-box">Klient<br><small>(nettleser / tracker)</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">reops-event-proxy<br><small>POST /api/send</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">Apache Kafka<br><small>topic: <code>konfigurerbart</code></small></div>
+    </div>
+
+    <!-- ───── Endepunkter ───── -->
+    <h2>Endepunkter</h2>
+
+    <!-- POST /api/send -->
+    <div class="card">
+        <p><span class="badge post">POST</span> <span class="endpoint-path">/api/send</span></p>
+        <p>Mottar en insight-hendelse, validerer/trunkerer feltene, og publiserer den til Kafka.</p>
+
+        <h3>Forespørsel-headere</h3>
+        <table>
+            <tr><th>Header</th><th>Påkrevd</th><th>Beskrivelse</th></tr>
+            <tr><td><code>Content-Type</code></td><td>Ja</td><td>Må være <code>application/json</code></td></tr>
+            <tr><td><code>User-Agent</code></td><td>Nei</td><td>Sendes videre som Kafka-header</td></tr>
+            <tr><td><code>X-Exclude-Filters</code></td><td>Nei</td><td>Filtre som legges på som Kafka-header</td></tr>
+            <tr><td><code>X-Forwarded-For</code></td><td>Nei</td><td>Klientens IP, videresendes som Kafka-header</td></tr>
+        </table>
+
+        <h3>Forespørselskropp</h3>
+        <pre><code>{
+  "type": "event",
+  "payload": {
+    "website":  "550e8400-e29b-41d4-a716-446655440000",
+    "id":       "valgfri-id",
+    "hostname": "www.nav.no",
+    "screen":   "1920x1080",
+    "language": "nb-NO",
+    "title":    "Min side",
+    "url":      "/minside",
+    "referrer": "https://google.com",
+    "name":     "page-view",
+    "data":     { "key": "value" }
+  }
+}</code></pre>
+
+        <h3>Suksessrespons</h3>
+        <p><span class="status status-2xx">201 Created</span></p>
+        <pre><code>{
+  "message": "Created",
+  "code": 201,
+  "truncationReport": null
+}</code></pre>
+        <p>Dersom noen felt ble trunkert (over 500 tegn) returneres en rapport:</p>
+        <pre><code>{
+  "message": "Created",
+  "code": 201,
+  "truncationReport": {
+    "limit": 500,
+    "violations": [
+      { "field": "payload.url", "length": 823 }
+    ]
+  }
+}</code></pre>
+
+        <h3>Feilresponser</h3>
+        <table>
+            <tr><th>Status</th><th>error</th><th>Beskrivelse</th></tr>
+            <tr><td><span class="status status-4xx">400</span></td><td><code>INVALID_EVENT</code></td><td>Ugyldig event (f.eks. <code>type</code> er blank)</td></tr>
+            <tr><td><span class="status status-4xx">400</span></td><td><code>INVALID_FORMAT</code></td><td>Kan ikke deserialisere request body</td></tr>
+            <tr><td><span class="status status-4xx">415</span></td><td><code>UNSUPPORTED_MEDIA_TYPE</code></td><td>Content-Type er ikke <code>application/json</code></td></tr>
+            <tr><td><span class="status status-4xx">405</span></td><td><code>METHOD_NOT_ALLOWED</code></td><td>Kun POST og OPTIONS er tillatt</td></tr>
+            <tr><td><span class="status status-5xx">500</span></td><td><code>INTERNAL_ERROR</code></td><td>Uventet feil (f.eks. Kafka nede)</td></tr>
+        </table>
+
+        <h3>Feilrespons-format</h3>
+        <pre><code>{
+  "error":   "INVALID_EVENT",
+  "message": "type must not be blank",
+  "status":  400
+}</code></pre>
+    </div>
+
+    <!-- ───── Datamodell ───── -->
+    <h2>Datamodell</h2>
+
+    <h3>Event</h3>
+    <div class="card">
+        <table>
+            <tr><th>Felt</th><th>Type</th><th>Påkrevd</th><th>Beskrivelse</th></tr>
+            <tr><td><code>type</code></td><td>String</td><td>Ja</td><td>Hendelsestype (f.eks. <code>"event"</code>). Må ikke være blank.</td></tr>
+            <tr><td><code>payload</code></td><td>Payload</td><td>Ja</td><td>Hendelsens innhold (se under).</td></tr>
+        </table>
+    </div>
+
+    <h3>Payload</h3>
+    <div class="card">
+        <table>
+            <tr><th>Felt</th><th>Type</th><th>Påkrevd</th><th>Maks lengde</th><th>Beskrivelse</th></tr>
+            <tr><td><code>website</code></td><td>UUID</td><td>Ja</td><td>–</td><td>Unik identifikator for nettstedet</td></tr>
+            <tr><td><code>id</code></td><td>String</td><td>Nei</td><td>500</td><td>Valgfri hendelses-ID</td></tr>
+            <tr><td><code>hostname</code></td><td>String</td><td>Nei</td><td>500</td><td>Vertsnavn (f.eks. <code>www.nav.no</code>)</td></tr>
+            <tr><td><code>screen</code></td><td>String</td><td>Nei</td><td>500</td><td>Skjermoppløsning (f.eks. <code>1920x1080</code>)</td></tr>
+            <tr><td><code>language</code></td><td>String</td><td>Nei</td><td>500</td><td>Nettleserens språk (f.eks. <code>nb-NO</code>)</td></tr>
+            <tr><td><code>title</code></td><td>String</td><td>Nei</td><td>500</td><td>Sidetittel</td></tr>
+            <tr><td><code>url</code></td><td>String</td><td>Nei</td><td>500</td><td>Side-URL (path)</td></tr>
+            <tr><td><code>referrer</code></td><td>String</td><td>Nei</td><td>500</td><td>Referrer-URL</td></tr>
+            <tr><td><code>name</code></td><td>String</td><td>Nei</td><td>500</td><td>Hendelsesnavn (f.eks. <code>page-view</code>)</td></tr>
+            <tr><td><code>data</code></td><td>JSON</td><td>Nei</td><td>500/felt</td><td>Vilkårlig JSON-objekt med egendefinerte data. Primitive verdier pakkes inn i <code>{"value": ...}</code>.</td></tr>
+        </table>
+        <p style="margin-top:.75rem;opacity:.7;font-size:.9rem;">
+            ⚠️ Strengfelter som overstiger 500 tegn trunkeres automatisk og merkes med <code>TRUNCATED</code>-suffiks.
+            Trunkeringsrapport returneres i responsen.
+        </p>
+    </div>
+
+    <h3>Response (suksess)</h3>
+    <div class="card">
+        <table>
+            <tr><th>Felt</th><th>Type</th><th>Beskrivelse</th></tr>
+            <tr><td><code>message</code></td><td>String</td><td>Statusmelding (<code>"Created"</code>)</td></tr>
+            <tr><td><code>code</code></td><td>Int</td><td>HTTP-statuskode (<code>201</code>)</td></tr>
+            <tr><td><code>truncationReport</code></td><td>TruncationReport?</td><td><code>null</code> hvis ingen felt ble trunkert</td></tr>
+        </table>
+    </div>
+
+    <h3>TruncationReport</h3>
+    <div class="card">
+        <table>
+            <tr><th>Felt</th><th>Type</th><th>Beskrivelse</th></tr>
+            <tr><td><code>limit</code></td><td>Int</td><td>Maksimal feltlengde (<code>500</code>)</td></tr>
+            <tr><td><code>violations</code></td><td>List&lt;TruncationViolation&gt;</td><td>Felt som ble trunkert</td></tr>
+        </table>
+    </div>
+
+    <h3>TruncationViolation</h3>
+    <div class="card">
+        <table>
+            <tr><th>Felt</th><th>Type</th><th>Beskrivelse</th></tr>
+            <tr><td><code>field</code></td><td>String</td><td>Feltets sti (f.eks. <code>payload.url</code>)</td></tr>
+            <tr><td><code>length</code></td><td>Int</td><td>Opprinnelig lengde før trunkering</td></tr>
+        </table>
+    </div>
+
+    <h3>Feilrespons</h3>
+    <div class="card">
+        <table>
+            <tr><th>Felt</th><th>Type</th><th>Beskrivelse</th></tr>
+            <tr><td><code>error</code></td><td>String</td><td>Feilkode (f.eks. <code>INVALID_EVENT</code>)</td></tr>
+            <tr><td><code>message</code></td><td>String</td><td>Lesbar feilmelding</td></tr>
+            <tr><td><code>status</code></td><td>Int</td><td>HTTP-statuskode</td></tr>
+        </table>
+    </div>
+
+    <!-- ───── Teknisk ───── -->
+    <h2>Teknisk stack</h2>
+    <div class="card">
+        <ul>
+            <li><strong>Språk:</strong> Kotlin 2.3</li>
+            <li><strong>Runtime:</strong> Java 25</li>
+            <li><strong>Rammeverk:</strong> Spring Boot 4.0 (WebFlux, reaktiv)</li>
+            <li><strong>Kafka:</strong> Spring Kafka (asynkron producer)</li>
+            <li><strong>Metrikker:</strong> Micrometer + Prometheus</li>
+            <li><strong>Native:</strong> GraalVM native image (valgfritt)</li>
+            <li><strong>HTTP/2:</strong> Aktivert</li>
+            <li><strong>CORS:</strong> Åpen (<code>*</code>) for POST og OPTIONS</li>
+            <li><strong>Maks request body:</strong> 64 KB</li>
+        </ul>
+    </div>
+
+    <footer>
+        reops-event-proxy &middot; NAV &middot; Sist oppdatert mars 2026
+    </footer>
+    </div>
+</body>
+</html>
+

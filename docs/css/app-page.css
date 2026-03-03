@@ -1,0 +1,27 @@
+/* ── App sub-page layout ── */
+.content {
+    flex: 1;
+    padding: 2rem 2rem 2rem 2.5rem;
+    overflow-y: auto;
+    max-width: 960px;
+}
+
+.subtitle { opacity: .85; margin-bottom: 2rem; font-size: 1.1rem; }
+
+/* ── Header (umami-style) ── */
+header { border-bottom: 2px solid rgba(255,255,255,.35); padding-bottom: 1rem; margin-bottom: 2rem; }
+header h1 { font-size: 2rem; margin-bottom: .25rem; }
+header p { opacity: .85; margin-top: .25rem; font-size: .95rem; }
+
+/* ── Endpoint path ── */
+.endpoint-path { font-family: monospace; font-size: 1.05rem; font-weight: 600; }
+
+/* ── Architecture diagram ── */
+.arch { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; justify-content: center; margin: 1.5rem 0; }
+.arch-box { background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.4); border-radius: 8px; padding: .75rem 1.25rem; text-align: center; font-weight: 600; min-width: 140px; }
+.arch-arrow { font-size: 1.5rem; opacity: .7; }
+
+/* ── Flow diagram ── */
+.flow-diagram { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+.flow-box { background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.4); border-radius: 8px; padding: .5rem 1rem; text-align: center; font-weight: 600; font-size: .85rem; }
+.flow-arrow { font-size: 1.2rem; opacity: .7; }
