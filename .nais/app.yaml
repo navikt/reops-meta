@@ -1,0 +1,26 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: reops-meta
+  namespace: team-researchops
+  labels:
+    team: team-researchops
+spec:
+  image: {{image}}
+  port: 8080
+  replicas:
+    min: 1
+    max: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 128Mi
+  ingresses:
+    - https://reops-meta.ansatt.dev.nav.no
+  liveness:
+    path: /
+  readiness:
+    path: /
+
