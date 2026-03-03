@@ -18,7 +18,7 @@ spec:
     limits:
       memory: 128Mi
   ingresses:
-    - https://reops-meta.ansatt.dev.nav.no
+    - https://reops-docs.ansatt.dev.nav.no
   liveness:
     path: /
   readiness:
