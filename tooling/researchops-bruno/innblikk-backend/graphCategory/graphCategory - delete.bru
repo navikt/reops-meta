@@ -1,11 +1,11 @@
 meta {
-  name: query - get all
+  name: graphCategory - delete
   type: http
-  seq: 5
+  seq: 4
 }
 
-get {
-  url: http://localhost:8086/api/projects/1/dashboards/1/graphs/1/queries
+delete {
+  url: http://localhost:8086/api/projects/1/dashboards/1/categories/1
   body: json
   auth: bearer
 }

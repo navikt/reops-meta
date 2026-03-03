@@ -1,11 +1,11 @@
 meta {
-  name: graph - delete
+  name: graph - get all
   type: http
   seq: 3
 }
 
-delete {
-  url: http://localhost:8086/api/projects/1/dashboards/1/graphs/1
+get {
+  url: http://localhost:8086/api/projects/1/dashboards/1/categories/1/graphs
   body: json
   auth: bearer
 }

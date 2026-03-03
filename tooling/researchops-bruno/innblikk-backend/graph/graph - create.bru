@@ -1,0 +1,28 @@
+meta {
+  name: graph - create
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8086/api/projects/1/dashboards/1/categories/1/graphs
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJraWQiOiJpc3N1ZWlzc3VlIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJzdGFydC11bWFtaSIsIm5iZiI6MTc3MTkzNjA3OSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2lzc3VlaXNzdWUiLCJuYW1lIjoic3RhcnQtdW1hbWkiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzdGFydC11bWFtaUBuYXYubm8iLCJvaWQiOiJzdGFydC11bWFtaUBuYXYubm8iLCJleHAiOjE3NzE5Mzk2NzksImlhdCI6MTc3MTkzNjA3OSwianRpIjoiZGZlZWEyYzYtZWExMS00NDQ1LWEyOTUtZWU4NmNmMGQ3OWU0IiwiZW1haWwiOiJzdGFydC11bWFtaUBuYXYubm8ifQ.JOAOWcXaY3k9IUKJzBec6BHddlfqDSFFRM4ie8A1mOxYJSqDcGbR1FCOGES0yzejEADYTRktekbTHsBdBeiAJcX43F8ejoI6NXWDHsFDbR5XXMFOWEDOvIhjOjN37YVOleQLwFQ6etP4jtE5FPf9TS0gHsQv07S7095r07t6aXSO-uhtlzdDbdyQR-TDEiIlbzvWPvlApQkvqegTt-lghfEsWrG-_m7j7JvcBjIhmqWND3Yw2SC-1UTkK48uLmUrHz0vaWl4DOJkVibppMLLGfkqeDGmrp-OAJXlHaLPjOjdvDfoC0ZtG5BnRTdI_AJvk5YwTq0023k3RhiJs44I1Q
+}
+
+body:json {
+  {
+    "name": "test-dashboard",
+    "graphType": "LINE",
+    "width": "50"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
