@@ -1,0 +1,27 @@
+meta {
+  name: query - ordering
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:8086/api/projects/1/dashboards/1/categories/1/graphs/1/queries/ordering
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJraWQiOiJpc3N1ZWlzc3VlIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJzdGFydC11bWFtaSIsIm5iZiI6MTc3MjYwODQ1NiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2lzc3VlaXNzdWUiLCJuYW1lIjoic3RhcnQtdW1hbWkiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzdGFydC11bWFtaUBuYXYubm8iLCJvaWQiOiJzdGFydC11bWFtaUBuYXYubm8iLCJleHAiOjE3NzI2MTIwNTYsImlhdCI6MTc3MjYwODQ1NiwianRpIjoiODU5ZmI3YmEtMDI0Zi00YTkxLWFkNTQtYzQ5ZWYwM2QwMGI1IiwiZW1haWwiOiJzdGFydC11bWFtaUBuYXYubm8ifQ.kJFoXZPuAH7f5_-qyxtKsJrGNnzuZ-BqCFjDOKZm1IXNceIzqx68y9VVoajbRKoG1l3h6o8VX-UDis2iqoCK1J5u1Wdd8I9vrvWzBkhf3HbRRvawlIeZlfjFq9MgU0O1aF9ta_prxDhzaeh2qhHOl-P1Jqf-jeJr6sYtEPGKLrDIIOv0p1M6WJgb3sCNxjUyw94zvWEVO4Djoszx1aVU22Np9wIOCez6GzXljgMACnd4LMceua0DmiJhxKiYGXWqvG_974KSjBJRmK3xufh4S_J79-nneB-rp_GjHlGAOfQ2zeVD1KxDRoheahoWIXB09_Mk93q8Xh2FMMw5L6NyCQ
+}
+
+body:json {
+  [{
+    "id": 1,
+    "ordering": 10
+  }]
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
