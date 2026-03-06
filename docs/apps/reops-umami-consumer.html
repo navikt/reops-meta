@@ -55,19 +55,11 @@
     <!-- ───── Kafka-inntak ───── -->
     <h2>Kafka-inntak</h2>
     <div class="card">
-        <table>
-            <tr><th>Egenskap</th><th>Verdi</th></tr>
-            <tr><td>Topic</td><td><code>${spring.kafka.topic}</code> (standard: <code>test2</code>)</td></tr>
-            <tr><td>Consumer-group</td><td><code>reops-umami-consumer-group</code></td></tr>
-            <tr><td>Ack-modus</td><td>MANUAL</td></tr>
-            <tr><td>Auto-offset-reset</td><td>earliest</td></tr>
-        </table>
-
         <h3>Kafka-headers som leses</h3>
         <table>
             <tr><th>Header</th><th>Påkrevd</th><th>Beskrivelse</th></tr>
-            <tr><td><code>user-agent</code></td><td>Nei</td><td>Videresendes til Umami. Fallback: <code>"unknown"</code></td></tr>
-            <tr><td><code>x-exclude-filters</code></td><td>Nei</td><td>Kommaseparert liste med feltnøkler som skal unntas fra redaksjon</td></tr>
+            <tr><td><code>user-agent</code></td><td>Nei</td><td>Brukes browser og os</td></tr>
+            <tr><td><code>x-exclude-filters</code></td><td>Nei</td><td>Kommaseparert liste med feltnøkler som skal unntas fra redaksjon - vurderes</td></tr>
             <tr><td><code>x-forwarded-for</code></td><td>Nei</td><td>Videresendes til Umami for klientens IP</td></tr>
         </table>
     </div>
@@ -84,18 +76,6 @@
             <tr><td><code>Content-Type</code></td><td><code>application/json</code></td></tr>
             <tr><td><code>user-agent</code></td><td>Fra Kafka-header (eller <code>"unknown"</code>)</td></tr>
             <tr><td><code>x-forwarded-for</code></td><td>Fra Kafka-header (kun hvis tilstede)</td></tr>
-        </table>
-    </div>
-
-    <div class="card">
-        <h3>Actuator-endepunkter <span class="badge badge-get">GET</span></h3>
-        <p>Basepath: <code>/internal/</code> &nbsp;|&nbsp; Port: <code>8080</code></p>
-        <table>
-            <tr><th>Endepunkt</th><th>Beskrivelse</th></tr>
-            <tr><td><code>GET /internal/health</code></td><td>Helsestatus for applikasjonen</td></tr>
-            <tr><td><code>GET /internal/info</code></td><td>Applikasjonsinformasjon</td></tr>
-            <tr><td><code>GET /internal/metrics</code></td><td>Micrometer-metrikker</td></tr>
-            <tr><td><code>GET /internal/prometheus</code></td><td>Prometheus-scraping</td></tr>
         </table>
     </div>
 

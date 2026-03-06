@@ -51,13 +51,13 @@
         <h3>Forespørsel-headere</h3>
         <table>
             <tr><th>Header</th><th>Påkrevd</th><th>Beskrivelse</th></tr>
-            <tr><td><code>Content-Type</code></td><td>Ja</td><td>Må være <code>application/json</code></td></tr>
-            <tr><td><code>User-Agent</code></td><td>Nei</td><td>Sendes videre som Kafka-header</td></tr>
-            <tr><td><code>X-Exclude-Filters</code></td><td>Nei</td><td>Filtre som legges på som Kafka-header</td></tr>
-            <tr><td><code>X-Forwarded-For</code></td><td>Nei</td><td>Klientens IP, videresendes som Kafka-header</td></tr>
+            <tr><td><code>Content-Type</code></td><td>Ja</td><td><code>application/json</code></td></tr>
+            <tr><td><code>User-Agent</code></td><td>Nei</td><td>Brukers browser og os</td></tr>
+            <tr><td><code>X-Exclude-Filters</code></td><td>Nei</td><td>Custom filter - (vurderes)</td></tr>
+            <tr><td><code>X-Forwarded-For</code></td><td>Nei</td><td>Klientens IP, brukes for geo lokasjon av land</td></tr>
         </table>
 
-        <h3>Forespørselskropp</h3>
+        <h3>Forespørsel</h3>
         <pre><code>{
   "type": "event",
   "payload": {
@@ -118,7 +118,7 @@
     <div class="card">
         <table>
             <tr><th>Felt</th><th>Type</th><th>Påkrevd</th><th>Beskrivelse</th></tr>
-            <tr><td><code>type</code></td><td>String</td><td>Ja</td><td>Hendelsestype (f.eks. <code>"event"</code>). Må ikke være blank.</td></tr>
+            <tr><td><code>type</code></td><td>String</td><td>Ja</td><td>Hendelsestype (f.eks. <code>"event"</code>).</td></tr>
             <tr><td><code>payload</code></td><td>Payload</td><td>Ja</td><td>Hendelsens innhold (se under).</td></tr>
         </table>
     </div>
